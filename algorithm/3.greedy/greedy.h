@@ -56,6 +56,35 @@ private:
         }
         return true;
     }
+
+
+    vector<int> partitionLabels(const string& s) {
+        const int SIZE = (int)s.length();
+        vector<int> vec;
+        int lastIndexArray[26];
+        for(int& i : lastIndexArray) i = -1;
+        int currentBeginIndex = -1;                 //  这是一个小优化，左边弄成开区间，减少运算次数
+        int currentLastIndex = 0;
+        for(int i=0; i< SIZE; i++){
+            const char c = s.at(i);
+            const int c_ptr = ((int)c) - 'a';
+            if(lastIndexArray[c_ptr] == -1){    //  也有人把这个放到外面，分别两个循环
+                for(int j = SIZE - 1; /* 一定能够break的 */ ; j--){
+                    if(c == s.at(j)){
+                        lastIndexArray[c_ptr] = j;
+                        break;
+                    }
+                }
+            }
+            currentLastIndex = max(currentLastIndex, lastIndexArray[c_ptr]);
+            if(i==currentLastIndex){
+                vec.push_back(currentLastIndex - currentBeginIndex);
+                currentBeginIndex = i;
+            }
+        }
+        return vec;
+    }
+
 public:
     void test_eraseOverlapIntervals_and_findMinArrowShots(){
         vector<vector<int>> intervals = {{1,2},{0,1},{3,4},{3,7},{5,6},{4,6}};
@@ -70,5 +99,10 @@ public:
     void test_isSubsequence(){
         cout<<isSubsequence("ace","ache");
     }
+
+    void test_partitionLabels(){
+        printVector(partitionLabels("ababcbacadefegdehijhklij"));
+    }
+
 };
 #endif //LEETCODE_GREEDY_H

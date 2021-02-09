@@ -9,7 +9,7 @@ int main() {
     Sort my_sort;
     Greedy greedy;
 
-    greedy.test_reconstructQueue();
+    greedy.test_partitionLabels();
 
     DS_string ds_string;
     //ds_string.test_KMP();
