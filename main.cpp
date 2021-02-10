@@ -13,7 +13,7 @@ int main() {
     Greedy greedy;
     BinarySearch binarySearch;
     Divide divide;
-    divide;
+    divide.test_generateTrees();
 
     DS_string ds_string;
     //ds_string.test_KMP();
