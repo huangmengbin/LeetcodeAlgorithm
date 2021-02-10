@@ -3,4 +3,4 @@ project(leetcode)
 
 set(CMAKE_CXX_STANDARD 14)
 
-add_executable(leetcode main.cpp algorithm/1.double_pointer/double_pointer.h Helper.h algorithm/2.my_sort/my_sort.h DS/5.String/DS_String.h algorithm/3.greedy/greedy.h algorithm/4.binary_search/binary_search.h)
+add_executable(leetcode main.cpp Algorithm/1.double_pointer/double_pointer.h Helper.h Algorithm/2.my_sort/my_sort.h DS/5.String/DS_String.h Algorithm/3.greedy/greedy.h Algorithm/4.binary_search/binary_search.h Algorithm/5.divide/divide.h)
