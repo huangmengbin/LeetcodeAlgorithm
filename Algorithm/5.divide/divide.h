@@ -66,11 +66,11 @@ private:
         TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
         TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
     };
-    vector<TreeNode*> generateTrees(const int LOW, const int HIGH){
+    vector<TreeNode*> generateTreesRecursively(const int LOW, const int HIGH){
         vector<TreeNode*> result;
         for(int i=LOW;i<=HIGH;++i){
-            auto  leftTrees = (i == LOW) ? vector<TreeNode*>{nullptr} : generateTrees(LOW, i - 1);
-            auto rightTrees = (i == HIGH) ? vector<TreeNode*>{nullptr} : generateTrees(i + 1, HIGH);
+            auto  leftTrees = (i == LOW) ? vector<TreeNode*>{nullptr} : generateTreesRecursively(LOW, i - 1);
+            auto rightTrees = (i == HIGH) ? vector<TreeNode*>{nullptr} : generateTreesRecursively(i + 1, HIGH);
             for(auto leftTree: leftTrees){
                 for(auto rightTree: rightTrees){
                     result.push_back(new TreeNode(i, leftTree, rightTree));
@@ -79,9 +79,47 @@ private:
         }
         return result;
     }
-    vector<TreeNode*> generateTrees(int n) {
+    vector<TreeNode*> generateTreesRecursively(int n) {
         if(n==0)  return {};
-        return generateTrees(1, n);
+        return generateTreesRecursively(1, n);
+    }
+
+    class TreeNodes{    // 可有可无的一个类
+        vector<TreeNode*>* treesInitialPtr;
+        int N;
+        vector<TreeNode*> empty = vector<TreeNode*>{nullptr};
+    public:
+        inline explicit TreeNodes(int N){
+            this->N = N;
+            treesInitialPtr = new vector<TreeNode*>[N * N];
+        }
+        inline vector<TreeNode*>* getVector(int row, int column){
+            if(row>column){
+                return &empty;
+            }
+            return (treesInitialPtr + row * N + column);
+        }
+    };
+    vector<TreeNode*> generateTreesDP(const int N) {      //DP，使用动态规划改造，自底向上，提高效率(时间、空间)
+        TreeNodes treeNodes(N);
+        for(int i = 0; i < N; i++){//差值
+            for(int row = 0, endRow = N - i; row < endRow; row++){//行号
+                //row; row+i;//斜线遍历
+                const int column = row + i;
+                vector<TreeNode*>* const treePtr = treeNodes.getVector(row, column);
+                for(int middle = row; middle <= column; middle++){
+                    //row,middle-1 ; middle+1,row+i; 记得一个是k-1，一个是k+1
+                    const auto * const leftVector = treeNodes.getVector(row, middle - 1);
+                    const auto * const rightVector = treeNodes.getVector(middle + 1, column);
+                    for(TreeNode* const left : *leftVector){
+                        for(TreeNode* const right : *rightVector){
+                            treePtr->push_back(new TreeNode(middle+1, left, right));
+                        }
+                    }
+                }
+            }
+        }
+        return *treeNodes.getVector(0, N-1);
     }
 
 public:
@@ -89,7 +127,7 @@ public:
         printVector(this->diffWaysToCompute("2*3-4*5"));
     }
     void test_generateTrees(){
-        printVector(this->generateTrees(3));
+        printVector(this->generateTreesDP(3));
     }
 };
 
