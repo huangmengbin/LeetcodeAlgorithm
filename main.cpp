@@ -16,8 +16,9 @@ int main() {
     Greedy greedy;
     BinarySearch binarySearch;
     Divide divide;
-divide.test_generateTrees();
-
+    Search search;
+    DP dp;
+    MyMath myMath;
     DS_string ds_string;
     //ds_string.test_KMP();
     return 0;
