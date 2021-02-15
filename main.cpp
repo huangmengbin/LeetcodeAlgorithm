@@ -17,7 +17,7 @@ int main() {
     BinarySearch binarySearch;
     Divide divide;
     Search search;
-    search.test_pacificAtlantic();
+    search.test_ladderLength();
     DP dp;
     MyMath myMath;
     DS_string ds_string;

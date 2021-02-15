@@ -6,6 +6,9 @@
 #define LEETCODE_SEARCH_H
 #include "../../Helper.h"
 class Search{
+    /**
+     * DFS
+     * */
     template<class T>
     void DFS(const vector<vector<T>>& grids, const int index, const int N,
              const function<bool(int,int)>& to_visit_function,
@@ -213,6 +216,149 @@ class Search{
         return result;
     }
 
+
+
+
+
+    /**
+     * BFS
+     * */
+
+    int shortestPathBinaryMatrix(vector<vector<int>>& grid) {
+        const int ROW = grid.size();
+        if(ROW==0) return 0;
+        const int COLUMN = grid.at(0).size();
+        if(COLUMN==0) return 0;
+        const vector<pair<int,int>>& directions = {
+                {0,1},{1,0},{0,-1},{-1,0},
+                {1,1},{1,-1},{-1,1},{-1,-1}
+        };
+        queue<pair<int,int>> q1;
+        queue<pair<int,int>> q2;
+        queue<pair<int,int>>* q1_ptr = &q1;
+        queue<pair<int,int>>* q2_ptr = &q2;
+        q1.push({0,0});
+        int result = 0;
+        while (!q1_ptr->empty()){
+            while (!q1_ptr->empty()){
+                const auto pii = q1_ptr->front();
+                q1_ptr->pop();
+                if(pii.first<0 || pii.first==ROW || pii.second < 0 || pii.second == COLUMN || grid[pii.first][pii.second]){
+                    continue;
+                }
+                grid[pii.first][pii.second] = 2;
+                if(pii.first == ROW-1 && pii.second == COLUMN-1){
+                    return result;
+                }
+                for(const auto direction:directions){
+                    q2_ptr->push({pii.first+direction.first,pii.second+direction.second});
+                }
+            }
+            swap(q1_ptr,q2_ptr);
+            ++result;
+        }
+        return -1;
+    }
+
+    int numSquares(const int N) {
+        const int sq = ceil(sqrt(N));
+        int *const square = new int [sq + 1]{0};
+        for(int i=1; i <= sq; i++) square[i] = i * i;
+        bool *const hasVisited = new bool [N+1];
+        memset(hasVisited,0,(N+1) * sizeof (bool));
+        queue<int> queue_int;
+        queue_int.push(N);
+        int result = 1;
+        while (true){
+            for(int SIZE = queue_int.size();SIZE>0;--SIZE){
+                const int item = queue_int.front();queue_int.pop();
+                hasVisited[item] = true;
+                for(int i=1; i <= sq; i++) {
+                    const int new_item = item - square[i];
+                    if(new_item<0){
+                        break;
+                    } else if(new_item==0){
+                        return result;
+                    } else if(hasVisited[new_item]){
+                        continue;
+                    } else{
+                        queue_int.push(new_item);
+                    }
+                }
+            }
+            ++result;
+        }
+    }
+
+
+
+    int ladderLength(const string& beginWord, const string& endWord, vector<string>& wordList) {
+        wordList.push_back(beginWord);
+        const int N = (int)wordList.size();
+        unordered_map<string,int> wordMap;
+        for(unsigned i=0; i<N ;i++) {
+            wordMap[wordList.at(i)] = i;
+        }
+        if(!wordMap.count(endWord)){
+            return -0;
+        }
+
+        // 巧妙的建图方法，利用了“小写字母数量有限”和“字符串长度较短”，但还有更巧妙的，虚拟节点避免字符类型过多 ******* ...
+        vector<vector<int>> grids(N,vector<int>{});
+        for(const string& old_str : wordList){
+            for(unsigned i = 0; i < old_str.size(); i++){
+                for(char ch = 'a'; ch <= 'z'; ch++){
+                    if(ch != old_str.at(i)){
+                        string new_str = old_str;
+                        new_str.at(i) = ch;
+                        if(wordMap.count(new_str)){
+                            grids.at(wordMap.at(old_str)).push_back(wordMap.at(new_str));
+                        }
+                    }
+                }
+            }
+        }
+        vector<char> hasVisited(N,0);
+        queue<int> q_begin, q_end;
+        q_begin.push(wordMap.at(beginWord));
+        q_end.push(wordMap.at(endWord));    // buggy  endWord 不一定有, 必须提前判断，return 0
+        int result = 0;
+        queue<int>* queue_ptr = &q_begin;
+        while (!q_begin.empty() && !q_end.empty()){
+            for(int CURRENT_SIZE = queue_ptr->size(); CURRENT_SIZE >0; CURRENT_SIZE--){
+                const int ptr = queue_ptr->front();
+                queue_ptr->pop();
+                if(hasVisited.at(ptr) == 1){
+                    continue;
+                } else if(hasVisited.at(ptr) == 2){
+                    return result;
+                } else{
+                    hasVisited.at(ptr) = 1;
+                    for(const int next: grids.at(ptr)){
+                        queue_ptr->push(next);
+                    }
+                }
+            }
+            result ++;
+            for(int CURRENT_SIZE = q_end.size(); CURRENT_SIZE >0; CURRENT_SIZE--){
+                const int ptr = q_end.front();
+                q_end.pop();
+                if(hasVisited.at(ptr) == 2){
+                    continue;
+                } else if(hasVisited.at(ptr) == 1){
+                    return result;
+                } else{
+                    hasVisited.at(ptr) = 2;
+                    for(const int next: grids.at(ptr)){
+                        q_end.push(next);
+                    }
+                }
+            }
+            result ++;
+        }
+        return -0;
+    }
+
 public:
     void test_findCircleNum(){
         cout<<findCircleNum({{1,1,0,0},{1,1,0,0},{0,0,1,0},{0,0,0,1}})<<endl;
@@ -238,7 +384,6 @@ public:
         }
         );
     }
-
     void test_solve(){
         vector<vector<char>> v = {
                 {'X','X','X','X'},
@@ -249,10 +394,15 @@ public:
         solve02(v);
         printVectorVector(v);
     }
-
     void test_pacificAtlantic(){
         printVectorVector(pacificAtlantic({{1,2,2,3,5},{3,2,3,4,4},{2,4,5,3,1},{6,7,1,4,5},{5,1,1,2,4},}));
     }
+
+    void test_ladderLength(){
+        vector<string> v = {"hot","dot","dog","lot","log","cog"};
+        cout<<ladderLength("hit","hot",v);
+    }
+
 };
 
 #endif //LEETCODE_SEARCH_H
