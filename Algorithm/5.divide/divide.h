@@ -58,14 +58,7 @@ private:
 
 
 
-    struct TreeNode {
-        int val;
-        TreeNode *left;
-        TreeNode *right;
-        TreeNode() : val(0), left(nullptr), right(nullptr) {}
-        TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
-        TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
-    };
+
     vector<TreeNode*> generateTreesRecursively(const int LOW, const int HIGH){
         vector<TreeNode*> result;
         for(int i=LOW;i<=HIGH;++i){
