@@ -50,6 +50,7 @@ class Search{
     int island_dfs(const vector<vector<T>>& grid, const T ocean, const int row, const int column,
                    const int ROW, const int COLUMN,
                    const vector<pair<int,int>>& direction, vector<vector<bool>>& hasVisited){
+        //  使用了hasVisited[row][column]避免重复，比较直观
         if(row<0 || column<0 || row == ROW || column == COLUMN || hasVisited[row][column]
             || ocean == grid[row][column]){ // buggy 别忘了最重要的grid数组，代表陆地与海洋.
             return 0;
@@ -112,6 +113,7 @@ class Search{
     void solve_dfs01(vector<vector<char>>& board, const int row, const int column,
                      const int ROW, const int COLUMN,
                      const vector<pair<int,int>>& direction){
+        //  board[row][column] == 'X' 与下面照应，避免重复遍历。
         if(row<0 || column<0 || row == ROW || column == COLUMN || board[row][column] == 'X'){
             return ;
         }
@@ -139,6 +141,7 @@ class Search{
 
     void solve_dfs02(vector<vector<char>>& board, const int row, const int column,
                      const int ROW, const int COLUMN, const vector<pair<int,int>>& direction) {
+        //  board[row][column] != 'O' 与下面照应，避免重复遍历。  主要是这里为了偷懒，未使用 hasVisited 数组。
         if(row<0 || column<0 || row == ROW || column == COLUMN || board[row][column] != 'O'){
             return ;
         }
@@ -176,6 +179,7 @@ class Search{
     void pacificAtlantic_dfs(const vector<vector<int>>& matrix,const int row, const int column,
                              const int ROW, const int COLUMN, const vector<pair<int,int>>& direction,
                              vector<vector<bool>>& reached, int historyHeight) {
+        //  matrix.at(row).at(column) < historyHeight 是 题意的逻辑
         if(row<0 || column<0 || row == ROW || column == COLUMN || reached[row][column] || matrix.at(row).at(column) < historyHeight){
             return ;
         }
