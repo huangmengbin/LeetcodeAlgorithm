@@ -420,6 +420,116 @@ class Search{
         return result;
     }
 
+
+
+    void restoreIpAddressesBacktracking(const string& NUMBER_STR, vector<string> & result, unsigned index, vector<unsigned>& current) {
+         if(index == NUMBER_STR.size()){
+             if(current.size() == 4){
+                 string s;
+                 s.append(to_string(current.at(0))).append(".");
+                 s.append(to_string(current.at(1))).append(".");
+                 s.append(to_string(current.at(2))).append(".");
+                 s.append(to_string(current.at(3)));
+                 result.push_back(s);
+             }
+             return;
+         }
+        if(current.size()==4)  return;   // 避免傻逼用例
+
+         for( unsigned i = index; i<NUMBER_STR.size();++i){
+             unsigned number = stoul(NUMBER_STR.substr(index,i+1-index));
+             if(number<256){
+                 current.push_back(number);
+                 restoreIpAddressesBacktracking(NUMBER_STR, result, i+1, current);
+                 current.pop_back();
+             } else{
+                 break;
+             }
+
+             if(number == 0){  //  buggy 不应该是 NUMBER_STR.at(i) == '0' , 避免出现 10，20 这类被打断
+                break;
+             }
+        }
+    }
+
+    vector<string> restoreIpAddresses(const string& NUMBER_STR) {
+        vector<string> result;
+        vector<unsigned> current;
+        restoreIpAddressesBacktracking(NUMBER_STR, result, 0, current);
+        return result;
+    }
+
+
+
+
+
+    bool existBacktracking(vector<vector<char>>& board, const string& word, int row, int column, int ROW, int COLUMN, const unsigned index, const vector<pair<int,int>>& directions) {
+         if(index == word.size()){
+             return true;
+         }
+         if(row<0 || column <0 || row ==ROW || column==COLUMN){
+             return false;
+         }
+         const char ch = board.at(row).at(column);
+         if(word.at(index) == ch){
+             board.at(row).at(column) = '\0';   // 对称，避免重复遍历
+             for(auto direction : directions){
+                 if(existBacktracking(board,word, row+direction.first, column+direction.second, ROW, COLUMN, index+1, directions)){
+                     return true;
+                 }
+             }
+             board.at(row).at(column) = ch;     // 对称，避免重复遍历
+         }
+        return false;
+    }
+
+    bool exist(vector<vector<char>>& board, const string& word) {
+        const int ROW = board.size(), COLUMN = board.at(0).size();
+        const vector<pair<int,int>>& direction = {{0,1},{1,0},{0,-1},{-1,0}};
+        for(int row = 0; row < ROW; row++){
+            for(int column = 0; column < COLUMN; column ++){
+                if(existBacktracking(board,word,row,column,ROW,COLUMN,0, direction)){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    inline bool isPalindrome(const string& s, unsigned begin, unsigned end){
+        while ( begin < end ) {
+            if(s.at(begin) != s.at(end)){
+                return false;
+            }
+            begin++;
+            end--;
+        }
+        return true;
+    }
+    void partitionBacktracking(const string& s, vector<vector<string>> & res, vector<string>& current, const unsigned index){
+         if(index == s.size()){
+            res.push_back(current);
+         }
+         for(unsigned i=index;i<s.size();i++){
+            if(isPalindrome(s,index,i)){
+                current.push_back(s.substr(index,1+i-index));
+                partitionBacktracking(s,res,current,i+1);
+                current.pop_back();
+            }
+//            else{
+//                break;        // buggy  不应该break，这里没有那种传递的关系。比如 12321 ， 前面部分非回文无法判断整体性质
+//            }
+         }
+     }
+
+    vector<vector<string>> partition(const string& s) {
+        vector<vector<string>> res;
+        vector<string> current;
+        partitionBacktracking(s,res,current,0);
+        return res;
+    }
+
+
 public:
     void test_findCircleNum(){
         cout<<findCircleNum({{1,1,0,0},{1,1,0,0},{0,0,1,0},{0,0,0,1}})<<endl;
