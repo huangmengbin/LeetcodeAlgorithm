@@ -368,9 +368,9 @@ class Search{
      *
      * */
 
-    // todo 能否用其他方法存储字符串(中间结果)， 以减少不必要的变量拷贝 ？
+    // 用其他方法存储字符串(中间结果)，以减少不必要的变量拷贝，提升时空效率
 
-     void letterCombinationsBacktracking(const string& digits, const unsigned ptr, const string stringList[], const string& currentString, vector<string>& result){
+     void letterCombinationsBacktracking(const string& digits, const unsigned ptr, const string stringList[], string& currentString, vector<string>& result){
          if(ptr == digits.size()){
              if(!currentString.empty()){
                  result.push_back(currentString);
@@ -379,24 +379,33 @@ class Search{
          }
          const string next_str = stringList[digits.at(ptr)-'2'];
          for(const char next_char:next_str){
-             letterCombinationsBacktracking(digits,ptr+1,stringList,currentString+next_char,result);
+             currentString.push_back(next_char);    //对称
+             letterCombinationsBacktracking(digits,ptr+1,stringList,currentString,result);
+             currentString.pop_back();              //对称
          }
      }
 
     vector<string> letterCombinations(const string& digits) {
         const string stringList[] = {"abc", "def", "ghi", "jkl", "mno", "pqrs", "tuv", "wxyz"};
         vector<string> result;
-        letterCombinationsBacktracking(digits,0,stringList,"",result);
+        string s;
+        letterCombinationsBacktracking(digits,0,stringList,s,result);
         return result;
     }
 
 
-    void binaryTreePathsBacktracking(const TreeNode* father, vector<string>& result, const string & currentString) {
+    void binaryTreePathsBacktracking(const TreeNode* father, vector<string>& result, string & currentString) {
         if(father->left){
-            binaryTreePathsBacktracking(father->left,result,currentString+"->"+to_string(father->left->val));
+            string next = "->"+to_string(father->left->val);
+            currentString.append(next);
+            binaryTreePathsBacktracking(father->left,result,currentString);
+            currentString.erase(currentString.size()-next.size());
         }
         if(father->right){
-            binaryTreePathsBacktracking(father->right,result,currentString+"->"+to_string(father->right->val));
+            string next = "->"+to_string(father->right->val);
+            currentString.append(next);
+            binaryTreePathsBacktracking(father->right,result,currentString);
+            currentString.erase(currentString.size()-next.size());
         } else if(!father->left){
             result.push_back(currentString);
         }
@@ -405,7 +414,8 @@ class Search{
     vector<string> binaryTreePaths(const TreeNode* root) {
         vector<string> result;
         if(root) {
-            binaryTreePathsBacktracking(root, result, to_string(root->val));
+            string s = to_string(root->val);
+            binaryTreePathsBacktracking(root, result, s);
         }
         return result;
     }
