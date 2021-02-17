@@ -157,7 +157,21 @@ class DP{
 
 
 
+    /**
+     *   整数拆分
+     */
 
+    int numSquares(const int N) {
+        int *const dp = new int [N+1]{0};
+        for(int i = 1; i <= N; i++){
+            dp[i] = INT_MAX;
+            const int sq = floor(sqrt(i));
+            for(int j = 1; j<=sq; j++){
+                dp[i] = min(dp[i],  1+dp[i-j*j]);
+            }
+        }
+        return dp[N];
+    }
 
 public:
     void test_minPathSum(){
