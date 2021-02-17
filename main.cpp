@@ -18,7 +18,7 @@ int main() {
     Divide divide;
     Search search;
     DP dp;
-    dp.test_minPathSum();
+    dp.test_numDecodings();
     MyMath myMath;
     DS_string ds_string;
     //ds_string.test_KMP();

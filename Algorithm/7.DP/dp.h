@@ -8,7 +8,7 @@
 class DP{
 
 
-    /**
+    /************************************************
      * 斐波那契
      */
 
@@ -57,7 +57,7 @@ class DP{
         return max(res1, rob1(nums));
     }
 
-    /**
+    /************************************************
      * 矩阵
      */
 
@@ -108,11 +108,11 @@ class DP{
     }
 
 
-    /**
+    /************************************************
      * 数组区间
      */
 
-    /**
+    /*************************
      *
      *   dp 数组代表: 以此处作为结尾的所有子数组中，等差数组的数量
      */
@@ -157,7 +157,7 @@ class DP{
 
 
 
-    /**
+    /************************************************
      *   整数拆分
      */
 
@@ -173,10 +173,44 @@ class DP{
         return dp[N];
     }
 
-public:
-    void test_minPathSum(){
-        cout<<minPathSum_1({{1,3,1},{1,5,1},{4,2,1}});
+
+    /*************************
+     * 求方法总数，DP较好
+     * 求每个方法的具体细节，回溯较好
+     */
+    int numDecodings(const string& s) {
+        const int N = s.size();
+        assert(N);
+        int *dp = new int [N];
+        //  buggy 小心 s 里面包含了字符 '0'
+        for(int i = 0; i<N; ++i){
+            int num1 = s.at(i) - '0';
+            if(i) {
+                dp[i] = num1 ? dp[i-1] : 0;         //  这里的，一旦被0阻断，就会很复杂，慢慢想吧
+                int num2 = stoi(s.substr(i-1,2));
+                if(10<=num2 && num2<=26) {          //  避免 00 ~ 09 这类,  也是 0 阻断的原因之一
+                    dp[i] +=  i==1? 1 : dp[i-2];    //  buggy 防止溢出；也可以设一个虚拟节点 dp[-1]=1;
+                }
+            } else{
+                dp[0] = num1!=0;
+            }
+        }
+        for(int i=0;i<N;i++){
+            cout<<dp[i]<<' ';
+        }
+        cout<<endl;
+        return dp[N-1];
     }
 
+
+
+public:
+    void test_minPathSum(){
+        minPathSum_1({{1,3,1},{1,5,1},{4,2,1}});
+    }
+
+    void test_numDecodings(){
+        cout<<numDecodings("12002");
+    }
 };
 #endif //LEETCODE_DP_H
