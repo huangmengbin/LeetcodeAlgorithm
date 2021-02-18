@@ -313,6 +313,101 @@ class DP{
         return dp[N1][N2];
     }
 
+    /**
+     * 字符串编辑
+     */
+
+    /**
+     * 两个字符串的删除操作
+     * @param text1
+     * @param text2
+     * @return
+     */
+    int minDistance(const string& text1, const string& text2) {
+        const int N1 = text1.size(), N2 = text2.size();
+        //  buggy 不要忘了 *2 ， 因为两个串都有剩余值
+        return N1+N2-longestCommonSubsequence(text1,text2)*2;
+    }
+
+    /**
+     * 字符串编辑距离（除了删除，还能增、改, 【实际上不再需要考虑删除了】）
+     * @param text1
+     * @param text2
+     * @return
+     */
+    int minDistance(string text1, string text2) {
+        const int N1 = text1.size(), N2 = text2.size();
+        int **const dp = new int * [1+N1];
+        for(int i = 0; i<= N1; i++){
+            dp[i] = new int [1+N2];
+            dp[i][0] = i;
+        }
+        for(int j = 0; j<=N2; j++){
+            dp[0][j] = j;
+        }
+
+        for(int i = 1;i<=N1;i++){
+            const char c1 = text1.at(i-1);
+            for(int j = 1; j<=N2; j++){
+                const char c2 = text2.at((j-1));
+                ///
+                if(c1==c2){
+                    dp[i][j] = dp[i-1][j-1];
+                } else{
+                    dp[i][j] = 1 + min(min(dp[i-1][j], dp[i][j-1]), dp[i-1][j-1]);
+                }
+                ///
+//                dp[i][j] = 1 + min(min(dp[i-1][j], dp[i][j-1]), dp[i-1][j-1]);
+//                if(c1==c2){
+//                    dp[i][j] = min(dp[i][j],dp[i-1][j-1]);
+//                }
+            }
+        }
+        return dp[N1][N2];
+    }
+
+    /**
+     * 只有两个键的键盘 ： 复制全部 粘贴复制框内容
+     * @param n 目的字符串的长度
+     * @return 步骤数
+     */
+    int minSteps(int n) {
+        int *const dp = new int [1+n];
+        dp[1] = 0;
+        //  将dp[0] 浪费掉了
+        for(int i = 2; i<=n; i++){
+            dp[i] = INT_MAX;
+            for(int j = 1; j < i; j++){
+                if(i%j == 0){
+                    dp[i] = min(dp[i], dp[j]+(i/j));
+                }
+            }
+        }
+        return dp[n];
+    }
+
+
+    /**
+     * dalao 写的优化，首先是 sqrt 开方，然后，dp[i+j]十分巧妙，因此才可以用break
+     * @param n
+     * @return
+     */
+    int minSteps_666 (int n) {
+        int *const dp = new int [1+n];
+        dp[1] = 0;
+        for (int i = 2; i <= n; i++) {
+            dp[i] = i;
+            int h = (int) sqrt(i);
+            for (int j = 2; j <= h; j++) {
+                if (i % j == 0) {
+                    dp[i] = dp[j] + dp[i / j];
+                    break;
+                }
+            }
+        }
+        return dp[n];
+    }
+
 public:
 
     void test_minPathSum(){
