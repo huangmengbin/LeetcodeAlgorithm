@@ -203,8 +203,118 @@ class DP{
     }
 
 
+    /***
+     *
+     * 子序列问题。
+     *
+     */
+
+    /**
+     * 最长递增子序列
+     * @param nums
+     * @return
+     */
+    int lengthOfLIS(const vector<int>& nums) {
+        int n = nums.size();
+        int * dp = new int[n];
+        int result = 1;         //  buggy 也初始化为1，避免永远不进入 if 而导致无法更新。或者把result=max()写在if外
+        for(int i = 0; i<n; i++){
+            dp[i] = 1;
+            //  buggy dp[i] = INT_MIN 是错的。无论i是多少，都可以选择从此处开始(忽略之前的所有)，因此至少会有1
+            for(int j = i-1; j>=0; j--){
+                if(nums.at(j) < nums.at(i)){
+                    dp[i] = max(dp[i], dp[j]+1);
+                    result = max(result, dp[i]);///
+                }
+            }
+        }
+        return result;
+    }
+
+
+    /**
+     * 最长摆动子序列
+     * @param nums
+     * @return
+     */
+    int wiggleMaxLength(const vector<int>& nums) {
+        int N = nums.size();
+        if (N < 2) {
+            return N;
+        }
+        int *const up = new int [N], *const down = new int [N];
+        up[0] = down[0] = 1;                // 末尾是up还是down
+        for (int i = 1; i < N; i++) {
+            if (nums[i-1] < nums[i]) {        // 上升的时候
+                up[i] = max(up[i - 1], down[i - 1] + 1);    // 立刻接上并没有太大坏处, 请参见下面一行
+                down[i] = down[i - 1];          //  上升对down数组更有利，因为未来下降潜力变大了
+            } else if (nums[i-1] > nums[i]) {
+                up[i] = up[i - 1];
+                down[i] = max(up[i - 1] + 1, down[i - 1]);
+            } else {                            //  仅仅传递到下一个而已，相当于 up 和 down 的指针都不动
+                up[i] = up[i - 1];
+                down[i] = down[i - 1];
+            }
+        }
+        return max(up[N - 1], down[N - 1]);
+    }
+
+    /**
+     * 一组整数对能够构成的最长链
+     * @param pairs
+     * @return
+     */
+    int findLongestChain(vector<vector<int>>& pairs) {
+        int n = pairs.size();
+        //  因为是任意，所以最好排序
+        sort(pairs.begin(),pairs.end(),[](const vector<int>&a,const vector<int>&b){
+            return a.at(0) < b.at(0);
+        });
+        int * dp = new int[n];
+        int result = 1;
+        for(int i = 0; i<n; i++){
+            dp[i] = 1;
+            for(int j = i-1; j>=0; j--){
+                if(pairs.at(j)[1] < pairs.at(i)[0]){    // 只需这一行改动一下下
+                    dp[i] = max(dp[i], dp[j]+1);
+                    result = max(result, dp[i]);
+                }
+            }
+        }
+        return result;
+    }
+
+    /**
+     * 最长公共子序列
+     * @param text1
+     * @param text2
+     * @return
+     */
+    int longestCommonSubsequence(const string& text1, const string& text2) {
+        const int N1 = text1.size(), N2 = text2.size();
+        int **const dp = new int * [1+N1];
+        for(int i = 0; i<= N1; i++){
+            dp[i] = new int [1+N2];
+            dp[i][0]=0;
+        }
+        memset(dp[0],0,(1+N2)*sizeof(int));
+        for(int i = 1;i<=N1;i++){
+            const char c1 = text1.at(i-1);
+            for(int j = 1; j<=N2; j++){
+                const char c2 = text2.at((j-1));
+                if(c1==c2){
+                    //  buggy  这个必须要用左上角，也就是斜线的。为了保证不发生重复匹配， 如 "ba" 和 “bcbcbcbc”
+                    dp[i][j] = dp[i-1][j-1] + 1;
+                } else{
+                    dp[i][j] = max(dp[i-1][j], dp[i][j-1]);
+                }
+            }
+        }
+        return dp[N1][N2];
+    }
 
 public:
+
     void test_minPathSum(){
         minPathSum_1({{1,3,1},{1,5,1},{4,2,1}});
     }
@@ -212,5 +322,11 @@ public:
     void test_numDecodings(){
         cout<<numDecodings("12002");
     }
+
+    void test_longestCommonSubsequence(){
+        cout<<longestCommonSubsequence("bsbininm",
+                                       "jmjkbkjkv");
+    }
+
 };
 #endif //LEETCODE_DP_H
