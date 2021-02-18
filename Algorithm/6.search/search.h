@@ -684,8 +684,55 @@ class Search{
     }
 
 
+    /**
+     * 子集(幂集)
+     */
+
+    void subsetsBacktracking(const vector<int>& nums, vector<vector<int>> &result, vector<int>& current, unsigned index){
+        if(index == nums.size()){
+            result.push_back(current);
+            return;
+        }
+        // 幂集 与 排列 不一样， 不需要 for 循环。 而是每次进行2种分支，选它 or 不选
+        current.push_back(nums.at(index));
+        subsetsBacktracking(nums,result,current,index+1);
+        current.pop_back();
+        subsetsBacktracking(nums,result,current,index+1);
+    }
+
+    vector<vector<int>> subsets(vector<int>& nums) {
+        vector<vector<int>> result;
+        vector<int> current;
+        /// sort(nums.begin(), nums.end());
+        subsetsBacktracking(nums,result,current,0);
+        return result;
+    }
 
 
+    void subsetsWithDupBacktracking(const vector<int>& nums, vector<vector<int>> &result, vector<int>& current, unsigned index,const bool selected){
+        if(index == nums.size()){
+            result.push_back(current);
+            return;
+        }
+        subsetsWithDupBacktracking(nums, result, current, index + 1, false);
+
+        //奇妙的剪枝，如果上次没有选，且重复，那这次就别选了。这个相等是可以传递很远的
+        if( !selected && nums.at(index) == nums.at(index - 1)){
+            return;
+        }
+        current.push_back(nums.at(index));
+        subsetsWithDupBacktracking(nums, result, current, index + 1, true);
+        current.pop_back();
+    }
+
+
+    vector<vector<int>> subsetsWithDup(vector<int>& nums) {
+        vector<vector<int>> result;
+        vector<int> current;
+        sort(nums.begin(), nums.end());        ///
+        subsetsWithDupBacktracking(nums, result, current, 0, true);
+        return result;
+    }
 
 
 public:
@@ -737,7 +784,7 @@ public:
     }
 
     void test_combinationSum3(){
-        combinationSum3(3,7);
+        printVectorVector(combinationSum3(3,7));
     }
 
 };
