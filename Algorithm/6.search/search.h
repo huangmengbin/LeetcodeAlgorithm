@@ -529,6 +529,164 @@ class Search{
         return res;
     }
 
+    /**
+     * 排列、组合、子集
+     */
+
+    /**
+     * 排列
+     */
+    void permuteBacktracking(const vector<int>& nums, vector<vector<int>>& result, vector<bool>& hasVisited, vector<int>& current) {
+        if(current.size() == nums.size()){
+            result.push_back(current);
+            return;
+        }
+        for(unsigned i = 0; i< nums.size(); i++){
+            if(!hasVisited.at(i)){
+                hasVisited.at(i) = true;
+                current.push_back(nums.at(i));
+                permuteBacktracking(nums, result, hasVisited, current);
+                current.pop_back();
+                hasVisited.at(i) = false;
+            }
+        }
+    }
+
+
+    vector<vector<int>> permute(const vector<int>& nums) {
+        vector<vector<int>> result;
+        vector<bool> hasVisited(nums.size(), false);
+        vector<int> cur;
+        permuteBacktracking(nums, result, hasVisited, cur);
+        return result;
+    }
+
+
+
+
+    void permuteUniqueBacktracking(const vector<int>& nums, vector<vector<int>>& result, vector<bool>& hasVisited, vector<int>& current) {
+        if(current.size() == nums.size()){
+            result.push_back(current);
+            return;
+        }
+        int history = -6766666;
+        for(unsigned i = 0; i< nums.size(); i++){
+            if(!hasVisited.at(i)){
+                if(history == nums.at(i)){
+                    continue;       //  只需避免和上一次的重复，即可
+                }
+                history = nums.at(i);
+                hasVisited.at(i) = true;
+                current.push_back(nums.at(i));
+                permuteUniqueBacktracking(nums, result, hasVisited, current);
+                current.pop_back();
+                hasVisited.at(i) = false;
+            }
+        }
+    }
+
+
+    vector<vector<int>> permuteUnique(vector<int>& nums) {
+        sort(nums.begin(), nums.end());
+        vector<vector<int>> result;
+        vector<bool> hasVisited(nums.size(), false);
+        vector<int> cur;
+        permuteUniqueBacktracking(nums, result, hasVisited, cur);
+        return result;
+    }
+
+
+    void combineBacktracking(const int N, const int K, int n, int k, vector<vector<int>> &result, vector<int>& current) {
+        if(k == K){
+            result.push_back(current);
+            return;
+        }
+        for(int i = n; i <= N; i++){
+            current.push_back(i);
+            combineBacktracking(N, K, i + 1, k + 1, result, current);
+            current.pop_back();
+        }
+    }
+    vector<vector<int>> combine(const int N, const int K) {
+        vector<vector<int>> result;
+        vector<int> current;
+        combineBacktracking(N, K, 1, 0, result, current);
+        return result;
+    }
+
+
+    void combinationSumBacktracking1(unsigned index, const vector<int>& candidates, const int target, const int currentSum, vector<vector<int>> &result, vector<int>& current) {
+        if(currentSum >= target){
+            if(currentSum == target){
+                result.push_back(current);
+            }
+            return;
+        }
+        //  buggy .允许无限制重复选取某一个元素，但不允许重复的组合
+        for(unsigned i = index, SIZE = candidates.size(); i<SIZE; i++){
+            const int candidate = candidates.at(i);
+            current.push_back(candidate);
+            //  buggy  递归不是用 index, 更不是 index+1, 而是 当前的 i；这样才能避免重复组合，同时重复选取
+            combinationSumBacktracking1(i, candidates, target, currentSum + candidate, result, current);
+            current.pop_back();
+        }
+    }
+    vector<vector<int>> combinationSum1(const vector<int>& candidates, int target) {
+        vector<vector<int>> result;
+        vector<int> current;
+        combinationSumBacktracking1(0, candidates, target, 0, result, current);
+        return result;
+    }
+
+
+    void combinationSumBacktracking2(unsigned index, const vector<int>& candidates, const int target, const int currentSum, vector<vector<int>> &result, vector<int>& current) {
+        if(currentSum >= target){
+            if(currentSum == target){
+                result.push_back(current);
+            }
+            return;
+        }
+        int history = -6766666;
+        for(unsigned i = index, SIZE = candidates.size(); i<SIZE; i++){
+            const int candidate = candidates.at(i);
+            if(history == candidate){
+                continue;
+            }
+            history = candidate;
+            current.push_back(candidate);
+            combinationSumBacktracking2(1+i, candidates, target, currentSum + candidate, result, current);
+            current.pop_back();
+        }
+    }
+    //  buggy  题目说的是对组合(最终结果)去重，而不是对求结果时对里面的元素去重。因此方法仍然是先排序、引入history记录
+    vector<vector<int>> combinationSum2(vector<int>& candidates, int target) {
+        vector<vector<int>> result;
+        vector<int> current;
+        sort(candidates.begin(), candidates.end());
+        combinationSumBacktracking2(0, candidates, target, 0, result, current);
+        return result;
+    }
+
+    vector<vector<int>> combinationSum3(int k, int n) {
+        vector<vector<int>> res;
+        auto tmp = combine(9,k);
+        // v in tmp ， 因为 tmp 才有点东西， res 是空的
+        for(auto& v : tmp){
+            int sum = 0;
+            for(auto i : v){
+                sum += i;
+            }
+            if(sum == n){
+                res.push_back(v);
+            }
+        }
+        return res;
+    }
+
+
+
+
+
 
 public:
     void test_findCircleNum(){
@@ -572,6 +730,14 @@ public:
     void test_ladderLength(){
         vector<string> v = {"hot","dot","dog","lot","log","cog"};
         cout<<ladderLength("hit","hot",v);
+    }
+
+    void test_permute(){
+        printVectorVector(permute({1,2,3}));
+    }
+
+    void test_combinationSum3(){
+        combinationSum3(3,7);
     }
 
 };

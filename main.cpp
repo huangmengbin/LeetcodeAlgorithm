@@ -17,8 +17,8 @@ int main() {
     BinarySearch binarySearch;
     Divide divide;
     Search search;
+    search.test_combinationSum3();
     DP dp;
-    dp.test_longestCommonSubsequence();
     MyMath myMath;
     DS_string ds_string;
     //ds_string.test_KMP();
