@@ -714,15 +714,18 @@ class Search{
             result.push_back(current);
             return;
         }
-        subsetsWithDupBacktracking(nums, result, current, index + 1, false);
 
-        //奇妙的剪枝，如果上次没有选，且重复，那这次就别选了。这个相等是可以传递很远的
-        if( !selected && nums.at(index) == nums.at(index - 1)){
-            return;
-        }
         current.push_back(nums.at(index));
         subsetsWithDupBacktracking(nums, result, current, index + 1, true);
         current.pop_back();
+
+        // 奇妙的剪枝，如果上次选了，且重复，那这次就必须要选了，不能不选。
+        // 这个相等是可以传递很远的
+        if( selected && nums.at(index) == nums.at(index - 1)){
+            return;
+        }
+        subsetsWithDupBacktracking(nums, result, current, index + 1, false);
+
     }
 
 
@@ -730,7 +733,7 @@ class Search{
         vector<vector<int>> result;
         vector<int> current;
         sort(nums.begin(), nums.end());        ///
-        subsetsWithDupBacktracking(nums, result, current, 0, true);
+        subsetsWithDupBacktracking(nums, result, current, 0, false);
         return result;
     }
 
