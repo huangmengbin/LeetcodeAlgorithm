@@ -678,6 +678,83 @@ class DP{
         return dp[target];
     }
 
+
+
+
+    /**
+     * 股票交易问题，注意区分多个状态，持仓、清仓、冷冻、当前次数(如果有次数限制的话)
+     */
+
+    /**
+     * 冷冻期为1天
+     * @param prices
+     * @return
+     */
+    int maxProfit(const vector<int>& prices) {
+        const int N = prices.size();
+        if(!N)return 0;
+        int *const buy = new int [N],   // 持仓时最大利润
+            *const frozen = new int [N],// 清仓后最大利润(在冷冻期)
+            *const sell = new int [N];  // 清仓后最大利润(非冷冻期)
+        buy[0] = -prices.at(0);
+        sell[0] = frozen[0] = 0;
+        for (int i = 1; i < N; i++) {
+            buy[i] = max(buy[i-1], sell[i-1]-prices.at(i));
+            frozen[i] = buy[i-1]+prices.at(i);
+            sell[i] = max(sell[i-1], frozen[i-1]);
+        }
+        return max(frozen[N-1], sell[N-1]);
+    }
+
+    /**
+     * 需要手续费
+     * @param prices
+     * @param fee 每次【卖】需要支付的手续费. 若为0则退化成无约束
+     * @return
+     */
+    int maxProfit(const vector<int>& prices, const int fee) {
+        const int N = prices.size();
+        int *const buy = new int [N],   // 持仓时最大利润
+            *const sell = new int [N];  // 清仓后最大利润
+        buy[0] = -prices.at(0);
+        sell[0] = 0;
+        for (int i = 1; i < N; i++) {
+            sell[i] = max(sell[i-1], buy[i-1]+prices.at(i) - fee);
+            buy[i] = max(buy[i-1], sell[i-1]-prices.at(i));
+        }
+        return sell[N-1];
+    }
+
+
+    /**
+     * 限制次数
+     * @param k 最多买k次
+     * @param prices
+     * @return
+     */
+    int maxProfit(int k, const vector<int>& prices) {
+        const int N = prices.size();
+        if( k >= N/2){  // 太简单了，不解释. 不写也是可以的
+            int result = 0;
+            for (int i = 1; i < N; i++) {
+                if (prices[i] > prices[i - 1]) {
+                    result += prices[i] - prices[i - 1];
+                }
+            }
+            return result;
+        }
+        vector<int> dp(N);
+        for (int i = 1; i <= k; i++) {                  // 限制最多 买卖 i 次
+            int localMax =  - prices.at(0);          // 有股票在手时，最多的钱。反正就是必定有股票。可能有钱、可能没钱、可能是负数的钱
+            for (int j = 1; j < N; j++) {               // 这一整个for循环，只会买卖一次股票。。。。。。？
+                localMax = max(localMax, dp[j] - prices.at(j));
+                dp[j] = max(dp[j - 1], localMax + prices.at(j));    // dp[]是交易正常结束后的，已经赚到钱了，即: 清仓了
+            }
+            printVector(dp);
+        }
+        return dp[N - 1];
+    }
+
 public:
 
     void test_minPathSum(){
@@ -703,6 +780,10 @@ public:
 
     void test_findMaxForm(){
         cout<<findMaxForm({"10", "0001", "111001", "1", "0"},5,3);
+    }
+
+    void test_maxProfit(){
+        maxProfit(2,{3,2,6,5,0,3});
     }
 
 };
