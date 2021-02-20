@@ -408,6 +408,271 @@ class DP{
         return dp[n];
     }
 
+
+    /**
+     *     0-1 背包， 数量有限、维度简单(一维)
+     *
+     * @param  VOLUME 为背包总容积、重量限制......
+     * @param weights 数组存储 NUMBER 个物品的重量(体积)
+     * @param values 数组存储 NUMBER 个物品的"价值"
+     * @return  最大的价值
+     */
+    int knapsack1(const int VOLUME, const vector<int>& weights, const vector<int>& values) {
+        assert(weights.size() == values.size());
+        const int NUMBER = weights.size();
+        /// @var NUMBER 为物品数量
+        int *const dp = new int[VOLUME + 1];  // dp 数组，搞一个0号位，方便计算
+        memset(dp,0,sizeof(int)*(1+VOLUME));
+        for (int i = 1; i <= NUMBER; i++) {
+            const int weight = weights[i - 1], value = values[i - 1];
+            for (int j = VOLUME; j >= 1; j--) {  // 这里本应该使用上一行的数据，因此倒序以防止覆盖
+                if (j >= weight) {
+                    dp[j] = max(dp[j], dp[j - weight] + value);
+                }
+            }
+        }
+        return dp[VOLUME];
+    }
+
+
+
+    /**
+     * 复杂度与 sum_of (nums)/2有关, 这也是背包问题不可避免的通病
+     * @param nums 只包含正整数的非空数组, 相当于背包里面的 weight
+     * @return 是否可以将这个数组分割成两个子集，使得两个子集的元素和相等。
+     */
+
+    bool canPartition(const vector<int>& nums) {
+        int sum = 0;
+        for(int num:nums){
+            sum+=num;
+        }
+        if(sum % 2){
+            return false;
+        }
+        const int VOLUME = sum/2;
+        vector<bool> dp (VOLUME+1,false);
+        dp[0]=true;
+        for (const int weight : nums) {                 // 0-1 背包一个物品只能用一次
+            for (int i = VOLUME; i >= weight; i--) {   // 从后往前，先计算 dp[i] 再计算 dp[i-weight]
+                dp[i] = dp[i] || dp[i - weight];      //dp[]是指，允许取到 该数字(外层循环) 时，能否达到规定的大小（i就是大小）
+            }
+            printVector(dp);
+        }
+        return dp.back();
+    }
+
+    /**
+     *
+     *
+     * @param nums 相当于weight
+     * @param S 目标和，对总体积有一定影响
+     * @return 使最终数组和为目标数 S 的所有添加符号的方法数。
+     *
+     * 方法总数，把第0个初始化为1，  不断 += 就行......
+     */
+    int findTargetSumWays(const vector<int>& nums, int S) {
+        int sum = 0;
+        for(int num:nums){
+            sum+=num;
+        }
+        if(sum<S){
+            return false;
+        }
+        sum += S;
+        if(sum % 2){
+            return false;
+        }
+        const int VOLUME = sum/2;
+        vector<int> dp (VOLUME+1);
+        dp[0]=1;
+        for (const int weight : nums) {
+            for (int i = VOLUME; i >= weight; i--) {
+                //  变成求方法总数了，比较难
+                dp[i] += dp[i-weight];  // 存在 +0 的可能性, 这...太迷惑了
+            }
+            printVector(dp);
+        }
+        return dp.back();
+    }
+
+    /**
+     * 给你一个二进制字符串数组 strings 和两个整数 m 和 n
+     * 请你找出并返回 strings 的最大子集的大小，该子集中 最多 有 m 个 0 和 n 个 1
+     * @param strings 二维的weight
+     * @param m 限制0
+     * @param n 限制1
+     * @return 最大的size，相当于每一个字符串的 value 均为 1
+     */
+    int findMaxForm0(const vector<string>& strings, int m, int n) {
+        int **const dp = new int *[m+1];
+        for(int i = 0; i<=m; ++i){  // buggy 这个初始化是 i<=m 而不是 i<m
+            dp[i] = new int [n+1];
+            memset(dp[i],0,(n+1)*sizeof(int));
+        }
+        for(const string& s : strings){
+            int zero = 0, one = 0;
+            for(const char c: s){
+                if(c=='0'){
+                    zero++;
+                }
+                else{
+                    one++;
+                }
+            }
+            for(int i = m; i>=zero; i--){
+                for(int j = n; j>=one; j--){
+                    /// dp[j] = max(dp[j], dp[j - weight] + value);
+                    dp[i][j] = max(dp[i][j], dp[i-zero][j-one]+1);
+                }
+            }
+        }
+        return dp[m][n];
+    }
+
+    /**
+     * 通用的 二维背包问题 解决方案
+     *
+     * @param weightLimit1 相当于容积1
+     * @param weights1 每一个的体积，被容积1所限制
+     * @param weightLimit2 相当于容积2
+     * @param weights2 每一个的体积，被容积2所限制
+     * @param values 每一件物品的最终"价值"
+     * @param initial 用它来初始化，默认为0
+     * @return 最大的“价值”
+     */
+
+    inline int knapsack2(const int weightLimit1, const vector<int>& weights1, const int weightLimit2, const vector<int>& weights2, const vector<int>& values, const int initial = 0) {
+        assert(weights1.size() == values.size() && weights2.size() == values.size());
+        vector<vector<int>> dp (1+weightLimit1, vector<int>(1+weightLimit2, initial));
+        for(unsigned ptr = 0, SIZE = values.size(); ptr<SIZE; ptr++){
+            const int value = values.at(ptr);
+            const int weight1 = weights1.at(ptr);
+            const int weight2 = weights2.at(ptr);
+            for(int i = weightLimit1; i >= weight1; i--){
+                for(int j = weightLimit2; j >= weight2; j--){
+                    dp[i][j] = max(dp[i][j], value+dp[i-weight1][j-weight2]);
+                }
+            }
+        }
+        return dp[weightLimit1][weightLimit2];
+    }
+
+    int findMaxForm(const vector<string>& strings, int m, int n) {
+        vector<int> zeros, ones;
+        const vector<int> values(strings.size(), 1);
+        for(const string& s : strings){
+            int zero = 0, one = 0;
+            for(const char c: s){
+                if(c=='0'){
+                    zero++;
+                }
+                else{
+                    one++;
+                }
+            }
+            zeros.push_back(zero);
+            ones.push_back(one);
+        }
+        return knapsack2(m,zeros,  n,ones,   values);
+    }
+
+
+    /**
+     * 经典的硬币组合问题，转化为恰好装满的完全背包
+     *
+     * @param coins 各个的体积
+     * @param amount 容积限制，且是必须相等，即：恰好装满
+     *   value 均为1
+     * @return  最小的“价值”，不是最大的，其实思路也也差不多
+     */
+    int coinChange(const vector<int>& coins, const int amount) {
+        if(amount == 0){
+            return 0;
+        }
+        vector<int> dp (amount + 1, INT_MAX);
+        for (const int weight : coins) {
+            for (int j = weight; j<=amount; ++j) {  /// 内层循环改成：正向， 为什么正向就可以了？
+                if(j==weight){
+                    //dp[weight] = 1, 不解释，
+                    dp[j] = 1;
+                } else if(dp[j-weight]!=INT_MAX){
+                    // 必须要保证【前面那个有解】才行啊，否则自己也没法利用以前的数据，因为题目要求‘恰好’.
+                    // 这里保证 j>weight，因此dp[0]没有用, 或者预先强行把dp[0]设置为0，就可以利用ta了
+                    // 利用以前的数据，优化、优化
+                    dp[j] = min(dp[j], 1+dp[j-weight]);
+                }
+            }
+        }
+        return dp[amount];
+    }
+
+
+    int change(int amount, vector<int>& coins) {
+        vector<int> dp (amount+1);
+        dp[0]=1;
+        for (const int weight : coins) {
+            //  内层 for 换方向，即可变成完全背包
+            for (int i = weight; i <= amount; i++) {
+                //  变成求方法总数了，比较难
+                dp[i] += dp[i-weight];  // 存在 +0 的可能性, 这...太迷惑了
+            }
+            printVector(dp);
+        }
+        return dp.back();
+    }
+
+
+
+    /**
+     * 给定一个非空字符串 @param s 和一个包含非空单词的列表 @param wordDict，  判定：该字符串是否可以被拆分为一个或多个在字典中出现的单词。
+     * @param s 非空字符串
+     * @param wordDict  可以重复利用
+     * @return
+     */
+    bool wordBreak(const string& s, vector<string>& wordDict) {
+        const int N = s.length();
+        vector<bool> dp (N + 1);
+        dp[0] = true;
+        for (int i = 1; i <= N; i++) {
+            for (const string& word : wordDict) {  // 涉及了顺序，因此两个for...
+                const int smallLen = word.length();
+                if( i>=smallLen ){
+                    if(word == s.substr(i-smallLen,smallLen)){
+                        dp[i] = dp[i] || dp[i-smallLen];
+                        if(dp[i]){
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        return dp[N];
+    }
+
+
+    /**
+     * 给定一个由正整数组成且不存在重复数字的数组，找出和为给定目标正整数的组合的个数。
+     * @param nums 数组，保证unique
+     * @param target 目标和
+     * @return 方法数。【顺序不同的序列被视作不同的组合】
+     */
+    int combinationSum4(const vector<int>& nums, const int target) {
+        vector<int> dp(target+1);
+        dp.at(0) = 1;
+        for (int i = 1; i <= target; i++) {
+            for (int num : nums) {
+                if( i >= num ){
+                    if(INT_MAX - dp[i] < dp[i-num]){    // buggy 居然溢出了， 只能面向用例...无语。。。
+                        break;
+                    }
+                    dp[i] += dp[i - num];       // num > 0 保证了顺序无关性？？？？？？  若允许num==0，就很恶心
+                }
+            }
+        }
+        return dp[target];
+    }
+
 public:
 
     void test_minPathSum(){
@@ -421,6 +686,18 @@ public:
     void test_longestCommonSubsequence(){
         cout<<longestCommonSubsequence("bsbininm",
                                        "jmjkbkjkv");
+    }
+
+    void test_canPartition(){
+        canPartition({1,5,11,5});
+    }
+
+    void test_findTargetSumWays(){
+        findTargetSumWays({1,1,1,1,1},3);
+    }
+
+    void test_findMaxForm(){
+        cout<<findMaxForm({"10", "0001", "111001", "1", "0"},5,3);
     }
 
 };
