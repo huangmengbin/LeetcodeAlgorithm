@@ -21,6 +21,20 @@ struct TreeNode {
     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
 };
 
+struct ListNode {
+    int val;
+    ListNode *next;
+    explicit ListNode(int x) : val(x), next(nullptr) {}
+};
+
+inline void printListNode(ListNode* listNode){
+    while(listNode){
+        cout << listNode->val << " -> ";
+        listNode = listNode->next;
+    }
+    cout<<"NULL\n";
+}
+
 template <typename T>
 void printVector(vector<T> v, const string& m = ", ", const string& l = "{ ", const string& r = " }\n"){
     cout<<l;

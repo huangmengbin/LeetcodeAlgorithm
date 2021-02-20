@@ -8,6 +8,8 @@
 #include "Algorithm/7.DP/dp.h"
 #include "Algorithm/8.my_math/my_math.h"
 
+#include "DS/1.linkedList/My_LinkedList.h"
+#include "DS/3.arrayList/ArrayList.h"
 #include "DS/5.String/DS_String.h"
 using namespace std;
 int main() {
