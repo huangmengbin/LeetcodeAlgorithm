@@ -629,6 +629,11 @@ class DP{
      * @param s 非空字符串
      * @param wordDict  可以重复利用
      * @return
+     *
+     * 如果不调换 for 的话，把wordDict的遍历放到最外层，那么apple就无法跟在pen后面再次使用了
+     * "applepenapple"
+     * ["apple","pen"]
+     * 就是说，它能组成appleappleapplepenpenpen，但pen后面不可能再有apple
      */
     bool wordBreak(const string& s, vector<string>& wordDict) {
         const int N = s.length();
