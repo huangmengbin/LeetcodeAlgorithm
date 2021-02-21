@@ -20,8 +20,10 @@ int main() {
     Divide divide;
     Search search;
     DP dp;
-    dp.test_maxProfit();
     MyMath myMath;
+
+    My_LinkedList linkedList;
+    linkedList.test_reverseKGroup();
     DS_string ds_string;
     //ds_string.test_KMP();
     return 0;
