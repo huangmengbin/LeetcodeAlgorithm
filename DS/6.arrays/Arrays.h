@@ -172,7 +172,7 @@ class My_Array{
 
      /**
       *     给定一个非空且只包含非负数的整数数组 nums ，数组的度的定义是指数组里任一元素出现频数的最大值。
-      *     你的任务是在 nums 中找到与 nums 拥有相同大小的度的最短连续子数组，返回其长度
+      *     你的任务是在 nums 中找到与 nums 拥有相同大小的度的 最短连续子数组，返回其长度。 即最小值
       *
       * @param nums
       * @return
@@ -198,5 +198,61 @@ class My_Array{
         }
          return min_length;
     }
+
+
+
+    /**
+     * 分隔数组成为“排序块”
+     *
+     * 数组arr是[0, 1, ..., arr.length - 1]的一种排列，我们将这个数组分割成几个“块”，
+     * 并将这些块分别进行排序。之后再连接起来，使得连接的结果和按升序排序后的原数组相同。
+     *
+     * @param arr
+     * @return 最多的 “块” 个数
+     */
+    int maxChunksToSorted(const vector<int>& arr) {
+        const int SIZE = arr.size();
+        int result = 0;
+        for(int lastIndex = 0; lastIndex < SIZE; lastIndex++, result++){
+            for(int index = lastIndex; index <= lastIndex; index++){
+                lastIndex = max(lastIndex, arr.at(index));      // 贪婪的不断索取右边的块
+            }
+        }
+        return result;
+    }
+
+
+    /**
+     *
+     * 索引从0开始长度为N的数组A，包含 0 到 N - 1 的所有整数。找到最大的集合S并返回其大小，
+     * 其中 S[i] = {A[i], A[A[i]], A[A[A[i]]], ... }且遵守以下的规则。
+     *
+     * 假设选择索引为i的元素A[i]为S的第一个元素，S的下一个元素应该是A[A[i]]，之后是A[A[A[i]]]... 以此类推，不断添加直到S出现重复的元素。
+     *
+     *     实际上，把数组看出链表，就是求最大 简单圈 的长度
+     *     由于它包含 0 到 N - 1 的所有整数，即所有值唯一，所以不会有【多个顶点指向同一节点】的复杂情况
+     *     因此不必区分 当前遍历 和 历史遍历
+     *
+     * @param nums
+     * @return
+     */
+    int arrayNesting(vector<int>& nums) {
+        const int SIZE = nums.size();
+        int result = 0;
+        for(int i = 0; i < SIZE; i++){
+            int cnt = 0;
+            for(int index = i; nums.at(index) != -1; cnt++){
+                int& currentIndex = nums.at(index); //  临时存储当前,以引用形式, 与for循环里面的判断条件是完全相同的
+                index = nums.at(index); //  指向下一个
+                //  buggy 最好是使当前遍历的那个变为 -1， 而不是使下一个变为 -1
+                currentIndex = -1;
+            }
+            result = max(result, cnt);
+        }
+        return result;
+    }
+
+
+
 };
 #endif //LEETCODE_ARRAYS_H
