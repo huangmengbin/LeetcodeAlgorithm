@@ -21,29 +21,7 @@ class My_Array{
         }
     }
 
-    /**
-     * 数组改造，改造成 r行 c列
-     * @param nums
-     * @param r 新数组的行数
-     * @param c 新数组的列数
-     * @return
-     */
-    vector<vector<int>> matrixReshape(const vector<vector<int>>& nums, const int r, const int c) {
-        int ROW = nums.size(), COLUMN = nums.at(0).size();
-        if((ROW*COLUMN)%(r*c))return nums;
-        vector<vector<int>> result;
-        int index = 0;
-        for(const auto& vec : nums){
-            for(const int num : vec){
-                if(index%c == 0){
-                    result.emplace_back();
-                }
-                result.back().push_back(num);
-                index++;
-            }
-        }
-        return result;
-    }
+
 
 
     /**
@@ -251,6 +229,37 @@ class My_Array{
         }
         return result;
     }
+
+
+
+    /**
+     *  【二维数组】
+     */
+
+    /**
+     * 数组改造，改造成 r行 c列
+     * @param nums
+     * @param r 新数组的行数
+     * @param c 新数组的列数
+     * @return
+     */
+    vector<vector<int>> matrixReshape(const vector<vector<int>>& nums, const int r, const int c) {
+        int ROW = nums.size(), COLUMN = nums.at(0).size();
+        if((ROW*COLUMN)%(r*c))return nums;
+        vector<vector<int>> result;
+        int index = 0;
+        for(const auto& vec : nums){
+            for(const int num : vec){
+                if(index%c == 0){
+                    result.emplace_back();
+                }
+                result.back().push_back(num);
+                index++;
+            }
+        }
+        return result;
+    }
+
 
 
 
