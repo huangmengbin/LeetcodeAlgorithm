@@ -261,6 +261,76 @@ class My_Array{
     }
 
 
+    /**
+     * 判断每一个 右下斜线 是否完全一致
+     * @param matrix
+     * @return
+     */
+    bool isToeplitzMatrix(const vector<vector<int>>& matrix) {
+        int ROW = matrix.size(), COLUMN = matrix.at(0).size();
+        for(int i = 0; i<ROW; i++){
+            int value = matrix[i][0];
+            for(int r = i+1, c = 1; r<ROW && c<COLUMN; r++,c++){
+                if(matrix[r][c]!=value){
+                    return false;
+                }
+            }
+        }
+        for(int j = 1; j<COLUMN; j++){
+            int value = matrix[0][j];
+            for(int r = 1, c = j+1; r<ROW && c<COLUMN; r++,c++){
+                if(matrix[r][c]!=value){
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    /**
+     * 有序二维矩阵搜索
+     *
+     */
+
+    /**
+     * 搜索 目的值
+     * @param matrix
+     * @param target 目标
+     * @return 是否存在
+     *
+     * 斜线 线性搜索法
+     */
+    bool searchMatrix(const vector<vector<int>>& matrix, const int target) {
+        int ROW = matrix.size(), COLUMN = matrix.at(0).size();
+        for(int row = ROW-1 , column = 0; row >= 0 and column < COLUMN; ){
+            const int current = matrix.at(row).at(column);
+            if(current > target){
+                --row;
+            }
+            else if(current < target){
+                ++column;
+            }
+            else{
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+
+    /**
+     * leetcode 378. 有序矩阵中第 K 小的元素
+     *
+     * @param matrix
+     * @param k
+     * @return
+     */
+    int kthSmallest(const vector<vector<int>>& matrix, const int k) {
+        int ROW = matrix.size(), COLUMN = matrix.at(0).size();
+        // todo
+        return 0;
+    }
 
 
 };
