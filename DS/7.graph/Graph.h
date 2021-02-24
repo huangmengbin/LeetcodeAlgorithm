@@ -67,6 +67,16 @@ class Graph{
     }
 
 
+    vector<int> findRedundantConnection(const vector<vector<int>>& edges) {
+        UnionSet unionSet((int)edges.size()+1);    //   buggy  范围是 1~N ， 因此需要多给他一个冗余空间
+        for(auto & edge : edges){
+            if( ! unionSet.tryToMerge(edge.at(0), edge.at(1)) ){
+                return edge;
+            }
+        }
+    }
+
+
 
 
 };

@@ -81,11 +81,24 @@ public:
     }
 
     inline bool isConnected(int a, int b){
+        assert(0<a && a<N && 0<b && b<N);
         return find(a) == find(b);
     }
 
     inline void merge(int a, int b){
+        assert(0<a && a<N && 0<b && b<N);
         nodes[find(a)] = find(b);
+    }
+
+    inline bool tryToMerge(int a, int b){
+        assert(0<a && a<N && 0<b && b<N);
+        int find_a = find(a), find_b = find(b);
+        if(find_a == find_b){
+            return false;
+        } else{
+            nodes[find_a] = find_b;
+            return true;
+        }
     }
 };
 
