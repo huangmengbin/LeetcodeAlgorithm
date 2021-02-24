@@ -67,6 +67,11 @@ class Graph{
     }
 
 
+    /**
+     * 把图变成树
+     * @param edges
+     * @return
+     */
     vector<int> findRedundantConnection(const vector<vector<int>>& edges) {
         UnionSet unionSet((int)edges.size()+1);    //   buggy  范围是 1~N ， 因此需要多给他一个冗余空间
         for(auto & edge : edges){
@@ -74,6 +79,66 @@ class Graph{
                 return edge;
             }
         }
+    }
+
+
+
+    /**
+     * 拓扑排序，题目给了节点个数、所有的边，因此转成邻接表
+     * 【广度优先遍历】即可
+     *
+     * @param numCourses 节点个数
+     * @param prerequisites 所有的边 < 终点 , 始点 >
+     * @return
+     */
+    vector<int> findOrder(const int numCourses, const vector<vector<int>>& prerequisites) {
+        vector<set<int>> pre(numCourses) , next(numCourses);
+        vector<bool> hasVisited(numCourses, false);
+        queue<int> indexes;
+
+        for(const auto & pii : prerequisites){
+            pre.at(pii[0]).insert(pii[1]);
+            next.at(pii[1]).insert(pii[0]);
+        }
+        /**
+         * 转成邻接表，再寻找没有 先序课程 的课程，  [ such as 微积分 I ]
+         */
+        for(int i = 0; i<numCourses; i++){
+            if(pre.at(i).empty()){
+                indexes.push(i);
+            }
+        }
+
+        vector<int> result;
+        while ( ! indexes.empty()){
+            const int current = indexes.front();
+            indexes.pop();
+
+            if(hasVisited.at(current)){
+                continue;
+            }
+
+            hasVisited.at(current) = true;
+            result.push_back(current);
+
+            const set<int> & nextSet = next.at(current);
+            for(int nextIndex : nextSet){
+                set<int> & preSet = pre.at(nextIndex);
+                assert(preSet.count(current));
+                preSet.erase(current);
+                if(preSet.empty()){
+                    indexes.push(nextIndex);
+                }
+            }
+
+        }
+
+        if(result.size() == numCourses){
+            return result;
+        } else{
+            return {};
+        }
+
     }
 
 
