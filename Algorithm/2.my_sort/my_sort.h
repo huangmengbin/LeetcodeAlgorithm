@@ -78,6 +78,29 @@ class Sort{
 
     }
 
+
+    /**
+     * 使用堆
+     * @param nums
+     * @param K
+     * @return
+     */
+    int findKthLargest_heap( const vector<int>& nums, const int K ) {
+        priority_queue<int,vector<int>,greater<> > my_heap; // buggy 这个才是最小堆，默认 less 是大顶堆
+        for(const int num:nums){
+            if(my_heap.size() == K){
+                const int top = my_heap.top();
+                if(num > top){ // 维护一个数字较大 的 最小堆, 所以不断寻找更大的数字
+                    my_heap.pop();
+                    my_heap.push(num);
+                }
+            } else{
+                my_heap.push(num);
+            }
+        }
+        return my_heap.top();
+    }
+
     vector<int> topKFrequent(const vector<int>& nums, int k) {
         unordered_map<int,int> unorderedMap;
         for(int num : nums){
@@ -115,6 +138,10 @@ public:
     void test_findKthLargest(){
         vector<int> nums = {3,3,4};
         cout<<findKthLargest(nums,1) <<endl;
+    }
+    void test_findKthLargest_heap(){
+        vector<int> nums = {3,2,1,5,6,4};
+        cout<<findKthLargest_heap(nums,2) <<endl;
     }
     void test_topKFrequent(){
         printVector(topKFrequent({1,1,2,2,3,1,0},2));
