@@ -9,13 +9,13 @@
 #include "Algorithm/8.my_math/my_math.h"
 
 #include "DS/1.linkedList/My_LinkedList.h"
+#include "DS/2.tree/MyTree.h"
 #include "DS/3.arrayList/ArrayList.h"
 #include "DS/5.String/DS_String.h"
 using namespace std;
 int main() {
     Double_pointer double_pointer;
     Sort my_sort;
-    my_sort.test_findKthLargest_heap();
     Greedy greedy;
     BinarySearch binarySearch;
     Divide divide;
@@ -24,6 +24,7 @@ int main() {
     MyMath myMath;
 
     My_LinkedList linkedList;
+    MyTree tree;
     DS_string ds_string;
     //ds_string.test_KMP();
     return 0;
