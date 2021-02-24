@@ -17,12 +17,57 @@ class Graph{
      * 所以非常简单，只需标记三个状态就行了
      *
      */
-     void isBipartite_dfs(){
-
+     bool isBipartite_dfs(const vector<vector<int>>& graph, const int currentIndex, const int currentState, vector<short>& state){
+         const vector<int>& next = graph.at(currentIndex);
+         state[currentIndex] = currentState;                    //  buggy 不要忘记修改 当前正在遍历的节点的状态
+         for(int nextIndex:next){
+             if( 0 == state.at(nextIndex)){
+                 if( ! isBipartite_dfs(graph, nextIndex, -currentState, state)){
+                     return false;
+                 }
+             } else if(currentState == state.at(nextIndex)){    //  同色当然不行，所以是 ==
+                 return false;
+             }
+         }
+         return true;
      }
 
-    bool isBipartite(const vector<vector<int>>& graph) {
-
+    bool isBipartite_using_dfs(const vector<vector<int>>& graph) {
+        vector<short> state(graph.size());
+        for(int i = 0; i<graph.size(); i++){
+            if( 0 == state.at(i) ){
+                if( ! isBipartite_dfs(graph, i, 1, state) ){
+                    return false;
+                }
+            }
+        }
+        return true;
     }
+
+
+    /**
+     * 使用并查集的方法
+     * @param graph
+     * @return
+     */
+    bool isBipartite(const vector<vector<int>>& graph) {
+        UnionSet unionSet(graph.size());
+        for(unsigned index = 0; index < graph.size(); index++){
+            const vector<int>& next = graph.at(index);
+            for(const int nextIndex: next){
+                if(unionSet.isConnected((int)index, nextIndex)){
+                    return false;
+                }
+            }
+            for(const int nextIndex: next){
+                unionSet.merge(next.front(), nextIndex);
+            }
+        }
+        return true;
+    }
+
+
+
+
 };
 #endif //LEETCODE_GRAPH_H

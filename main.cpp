@@ -15,6 +15,7 @@ using namespace std;
 int main() {
     Double_pointer double_pointer;
     Sort my_sort;
+    my_sort.test_findKthLargest_heap();
     Greedy greedy;
     BinarySearch binarySearch;
     Divide divide;
@@ -24,7 +25,6 @@ int main() {
 
     My_LinkedList linkedList;
     DS_string ds_string;
-    ds_string.test_countSubstrings();
     //ds_string.test_KMP();
     return 0;
 }

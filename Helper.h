@@ -55,6 +55,40 @@ void printVectorVector(vector<vector<T>> v, const string& m = ", ", const string
     cout<<endl;
 }
 
+
+class UnionSet{
+    int * nodes;
+    int N;
+
+    int find(int index) const {
+        if(nodes[index] == index){
+            return index;
+        }
+        return nodes[index] = find(nodes[index]);  // 路径压缩, 注意传参
+    }
+
+public:
+    inline explicit UnionSet(const int N){
+        nodes = new int [N];
+        for(int i = 0; i<N; i++){
+            nodes[i] = i;
+        }
+        this->N = N;
+    }
+
+    inline int size() const {
+        return N;
+    }
+
+    inline bool isConnected(int a, int b){
+        return find(a) == find(b);
+    }
+
+    inline void merge(int a, int b){
+        nodes[find(a)] = find(b);
+    }
+};
+
 #define LEETCODE_HELPER_H
 
 #endif //LEETCODE_HELPER_H
