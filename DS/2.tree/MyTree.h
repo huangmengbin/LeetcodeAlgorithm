@@ -327,6 +327,123 @@ public:
      */
 
 
+    /**
+     * 修剪二叉树，左闭右闭
+     * @param root
+     * @param low
+     * @param high
+     * @return
+     */
+    TreeNode* trimBST(TreeNode* root, const int low, const int high) {
+        if(root == nullptr)  return nullptr;
+        if(root->val < low){
+            return trimBST(root->right, low, high);
+        }
+        else if(root->val > high){
+            return trimBST(root->left, low, high);
+        }
+        root->left = trimBST(root->left, low, high);
+        root->right = trimBST(root->right, low, high);
+        return root;
+    }
+
+
+
+    /**
+     * 二叉搜索树，第k个元素
+     * @param root
+     * @param k
+     * @return
+     */
+    int kthSmallest(TreeNode* root, const int k) {
+        assert(root);
+        return kthSmallest_numOfNode(root,k).first;
+    }
+
+    /**
+     * 二叉搜索树，第k个元素
+     * @param root
+     * @param k
+     * @return  first：如果是-1，代表该树有多少个子节点；如果是自然数，代表答案val.  second：当first为-1时，才起作用，反映root所在子树总节点数量
+     */
+    pair<int,int> kthSmallest_numOfNode(TreeNode* root, int k){
+        if(root == nullptr){
+            return {-1,0};
+        }
+        pair<int,int> leftResult = kthSmallest_numOfNode(root->left, k);
+        if(leftResult.first >= 0){
+            return leftResult;                  // second无效
+        }
+        k -= leftResult.second;
+        if(k==1){
+            return {root->val, -6766666};   //  second无效
+        }
+        k -= 1;
+        pair<int,int> rightResult = kthSmallest_numOfNode(root->right, k);
+        return {rightResult.first,  leftResult.second+rightResult.second+1};
+    }
+
+
+
+    /**
+     * 给出 二叉 搜索 树 的根节点，该树的节点值各不相同， 即，严格大于左子树，严格小于右子树，不能相等了
+     * 请你将其转换为累加树（Greater Sum Tree），使每个节点 node的新值等于原树中大于或等于node.val的值之和。
+     * @param root
+     * @param sum
+     */
+    void convertBST(TreeNode* root, int & sum) {
+        if(!root)return;
+        convertBST(root->right,sum);
+        sum = root->val = sum + root->val;
+        convertBST(root->left,sum);
+    }
+
+    TreeNode* convertBST(TreeNode* root) {
+        int sum = 0;
+        convertBST(root, sum);
+        return root;
+    }
+
+
+
+
+    /**
+     * 二叉搜索树, 所以是有序的.  因此比较简单
+     * @param root
+     * @param p
+     * @param q
+     * @return
+     */
+    TreeNode* lowestCommonAncestor_bst(TreeNode*const root, TreeNode*const p, TreeNode*const q) {
+        return lowestCommonAncestor_bst(root, max(p->val, q->val), min(p->val, q->val));
+    }
+
+    TreeNode* lowestCommonAncestor_bst(TreeNode*const root, const int big, const int small) {
+        if(root->val < small)return lowestCommonAncestor_bst(root->right, big, small);
+        if(root->val > big)  return lowestCommonAncestor_bst(root->left, big, small);
+        return root;
+    }
+
+
+
+    /**
+     * 普通的二叉树，无序，只保证独特。难度稍大
+     * @param root
+     * @param p
+     * @param q
+     * @return
+     */
+    TreeNode* lowestCommonAncestor(TreeNode*const root, TreeNode*const p, TreeNode*const q) {
+        if(root == nullptr)  return nullptr;
+        if(root->val == p->val or root->val == q->val)  return root;
+        TreeNode *left = lowestCommonAncestor(root->left,p,q);
+        TreeNode *right = lowestCommonAncestor(root->right,p,q);
+        if(left and right)  return root;
+        if(left)  return left;                  //  buggy 这里是同一侧，因为是肯定句，别反过来了
+        if(right)  return right;
+        return nullptr;
+    }
+
 
 };
 #endif //LEETCODE_MYTREE_H
