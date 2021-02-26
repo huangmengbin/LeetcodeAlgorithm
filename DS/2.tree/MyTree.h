@@ -251,13 +251,27 @@ public:
      * @return
      */
     int rob(TreeNode* root) {
-        if(!root){
-            return 0;
-        }
-        // todo
+        return rob_pii(root).first;
     }
 
-
+    /**
+     * 用于辅助, 把递归法 搞成 和dp一样的复杂度
+     * @param root
+     * @return {允许使用当前 , 不允许使用当前}
+     */
+    pair<int,int> rob_pii(TreeNode* root) {
+        if(!root){
+            return {0, 0};
+        }
+        int canUseCurrent = root->val;
+        int notUseCurrent = 0;
+        pair<int,int> leftResult = rob_pii(root->left);
+        pair<int,int> rightResult = rob_pii(root->right);
+        notUseCurrent += leftResult.first + rightResult.first;
+        canUseCurrent += leftResult.second + rightResult.second;
+        canUseCurrent = max(canUseCurrent, notUseCurrent);
+        return {canUseCurrent, notUseCurrent};
+    }
 
 };
 #endif //LEETCODE_MYTREE_H
