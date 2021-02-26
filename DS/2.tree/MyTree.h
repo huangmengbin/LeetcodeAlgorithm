@@ -273,6 +273,59 @@ public:
         return {canUseCurrent, notUseCurrent};
     }
 
+    /**
+     * 每层的均值，小心溢出，记得提前用double
+     * @param root
+     * @return
+     */
+    vector<double> averageOfLevels(TreeNode* root) {
+        queue<TreeNode*> myQueue;
+        myQueue.push(root);
+        vector<double> result;
+        while ( ! myQueue.empty() ){
+            const int SIZE = myQueue.size();
+            double total = 0;
+            for(int i = 0; i < SIZE; i++){
+                TreeNode * current = myQueue.front();
+                total += current->val;
+                myQueue.pop();
+                if(current->left)myQueue.push(current->left);
+                if(current->right)myQueue.push(current->right);
+            }
+            result.push_back(total / SIZE);
+        }
+        return result;
+    }
+
+    /**
+     * 左下角的val
+     * @param root
+     * @return
+     */
+    int findBottomLeftValue(TreeNode* root) {
+        queue<TreeNode*> myQueue;
+        myQueue.push(root);
+        int result;
+        while ( ! myQueue.empty() ){
+            const int SIZE = myQueue.size();
+            result = myQueue.front()->val;
+            for(int i = 0; i < SIZE; i++){
+                TreeNode * current = myQueue.front();
+                myQueue.pop();
+                if(current->left)myQueue.push(current->left);
+                if(current->right)myQueue.push(current->right);
+            }
+        }
+        return result;
+    }
+
+
+
+    /**
+     * BST, binary search tree, 二叉搜索树。
+     * 即中序遍历有序, 单调非递减
+     */
+
 
 
 };
