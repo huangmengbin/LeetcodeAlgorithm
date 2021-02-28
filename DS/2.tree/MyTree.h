@@ -445,5 +445,87 @@ public:
     }
 
 
+    /**
+     * 寻找BST里面的众数
+     * @param ROOT
+     * @return
+     */
+    vector<int> findMode(TreeNode *const ROOT) {
+        if(!ROOT){return {};}
+        vector<int> result;
+        int currentSize, lastVisited;
+        int maxSize = 0;
+        findMode_inOrder(ROOT, [&result,&currentSize,&lastVisited,&maxSize](TreeNode *const node){
+
+            if (maxSize == 0 or node->val != lastVisited) {  //  maxSize == 0 仅在第一次是生效
+                currentSize = 1;
+            } else {                                        //  node->val == lastVisited
+                currentSize++;
+            }
+
+            // buggy 下面这一段，所有情况都需执行
+            if(currentSize > maxSize){
+                result.clear();
+            }
+            if(currentSize >= maxSize){
+                result.push_back(node->val);
+            }
+
+            maxSize = max(maxSize, currentSize);
+            lastVisited = node->val;
+
+        });
+        return result;
+    }
+
+    void findMode_inOrder(TreeNode *root, const function<void(TreeNode*const)>& func){
+        if(root->left)findMode_inOrder(root->left, func);
+        func(root);
+        if(root->right)findMode_inOrder(root->right, func);
+    }
+
+
+
+    /**
+     * 从有序数组中构造一个【平衡】的【二叉查找树】
+     * @param nums
+     * @return
+     */
+
+    TreeNode* sortedArrayToBST( const vector<int>& nums, int LOW = 0, int HIGH = -67666 ){
+        //  buggy   关于HIGH的初始值，这里别整 -1， 因为有时候，最左边的left <- [0,-1] ， 需要return nullptr。
+        //  起码要弄 -2 吧。不然就拆成两个算了
+        if(HIGH == -67666)    HIGH = (int)nums.size() - 1;
+        if(LOW > HIGH)  return nullptr;
+        const int middle_index = (1+LOW+HIGH) / 2;
+        const int middle_value = nums.at(middle_index);
+        return new TreeNode(middle_value
+                            ,sortedArrayToBST(nums,LOW,middle_index-1)
+                            ,sortedArrayToBST(nums,middle_index+1,HIGH));
+    }
+
+
+
+    /**
+     * 从有序链表中构造一个【平衡】的【二叉查找树】
+     * @param head
+     * @return
+     */
+    inline TreeNode* sortedListToBST(ListNode* head) {
+        int num = 0;
+        for(ListNode *node = head; node; node = node->next)  num++;
+        return sortedListToBST(head, 0, num-1);
+    }
+
+    //  注意，传了引用，相当于指针指针.     目的很简单，为了遍历完左子树后，head已经达到想要的状态，可以减少一重循环
+    TreeNode* sortedListToBST(ListNode * & head, int LOW, int HIGH){
+        if(LOW > HIGH)  return nullptr;
+        const int middle_index = (1+LOW+HIGH) / 2;
+        TreeNode *const leftNode = sortedListToBST(head,LOW,middle_index-1);
+        const int middle_value = head->val;
+        head = head->next;                          //  每一次调用只能 next一次。  那到底是发生在之前呢，还是之后呢？
+        TreeNode *const rightNode = sortedListToBST(head,middle_index+1,HIGH);
+        return new TreeNode(middle_value, leftNode, rightNode);
+    }
 };
 #endif //LEETCODE_MYTREE_H
