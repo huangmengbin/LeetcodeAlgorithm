@@ -31,7 +31,7 @@ public:
             TreeNode* const current = node_stack.top();
 
             if(lastVisit != current->left and lastVisit != current->right){ // <---不是从左右节点回来 <等价于> 从父节点过来
-                ///result.push_back(current->val); /// @先序
+                ///result.push_back(current->value); /// @先序
                 if(current->left != nullptr) {                              //  <--欲图遍历左树
                     node_stack.push(current->left);                         //  <--左树非空，允许遍历左树，则将其压栈
                     continue;                                               //  <--重新循环，下次循环将会从左树出发，本次遍历成功
@@ -41,7 +41,7 @@ public:
 
             /*  如果左边是nullptr，右边非空，它确实是能够进入这里的，而且方式很...奇妙  */
             if(lastVisit != current->right){                                // <---不是从右节点回来 <等价于> 从左节点过来，或 从父节点过来但左节点为空 <等价于> 已经遍历完左子树或者遍历左子树失败 <等价于> 不再需要遍历其左子树
-                ///result.push_back(current->val); /// @中序
+                ///result.push_back(current->value); /// @中序
                 if(current->right != nullptr){                              //  <--欲图遍历右树
                     node_stack.push(current->right);                        //  <--右树非空，允许遍历右树，则将其压栈
                     continue;                                               //  <--重新循环，下次循环将会从右树出发，本次遍历成功
@@ -49,7 +49,7 @@ public:
             }
 
 
-            ///result.push_back(current->val); /// @后序
+            ///result.push_back(current->value); /// @后序
             lastVisit = current;                                            //已经遍历完右树，或者遍历右树失败<等价于>不再需要遍历其右子树<等价于>不再需要遍历其左右子树
             node_stack.pop();                                               //此时，自身必定已完成遍历，则将其完全退出
 
@@ -141,7 +141,7 @@ public:
 
     /**
      * 给定一个非空特殊的二叉树，每个节点都是正数，并且每个节点的子节点数量只能为 2 或 0。如果一个节点有两个子节点的话，那么该节点的值等于两个子节点中较小的一个。
-     * 更正式地说，root.val = min(root.left.val, root.right.val) 总成立。
+     * 更正式地说，root.value = min(root.left.value, root.right.value) 总成立。
      * 给出这样的一个二叉树，你需要输出所有节点中的第二小的值。如果第二小的值不存在的话，输出 -1 。（unique后的第二小）
      *
      * 实际上，它是一个 “堆”
@@ -459,7 +459,7 @@ public:
 
             if (maxSize == 0 or node->val != lastVisited) {  //  maxSize == 0 仅在第一次是生效
                 currentSize = 1;
-            } else {                                        //  node->val == lastVisited
+            } else {                                        //  node->value == lastVisited
                 currentSize++;
             }
 
@@ -527,5 +527,104 @@ public:
         TreeNode *const rightNode = sortedListToBST(head,middle_index+1,HIGH);
         return new TreeNode(middle_value, leftNode, rightNode);
     }
+};
+
+
+
+
+
+
+
+/**
+ * 前缀树？ 题目保证所有的 string 都是非空的小写串
+ */
+class Trie{
+private:
+    const static int SUBTREE_SIZE = 26;
+
+    Trie ** childList = nullptr;
+    bool isENd = false;
+    int value = 0;
+    int sumary = 0;
+
+
+public:
+    /** Initialize your data structure here. */
+    Trie() {
+        this->childList = new Trie* [SUBTREE_SIZE];
+        for(int i = 0; i < SUBTREE_SIZE; i++){          //  buggy 不要忘记用循环把 指针数组 全部初始化为 null
+            childList[i] = nullptr;
+        }
+    }
+
+    ~Trie(){
+        for(int i = 0; i < SUBTREE_SIZE; i++){
+            if(childList[i] != nullptr){
+                delete childList[i];
+                childList[i] = nullptr;
+            }
+        }
+    }
+
+    /** Inserts a word into the trie. */
+    int insert(const string& word, const int val = 0, const int indexOfWord = 0) {
+        if(indexOfWord == word.size()){
+            const int history_val = this->value;
+            this->isENd = true;
+            this->value = val;
+            this->sumary += val - history_val;
+            return history_val;
+        }
+        const char ch = word.at(indexOfWord);
+        const int index = ch - 'a';
+        if(childList[index] == nullptr){
+            childList[index] = new Trie();
+        }
+        const int result = childList[index]->insert(word, val, indexOfWord + 1);
+        this->sumary += val - result;
+        return result;
+    }
+
+
+    /** Returns if the word is in the trie. */
+    bool search (const string& word, const int indexOfWord = 0) const {
+        if(indexOfWord == word.size()){
+            return isENd;
+        }
+        const char ch = word.at(indexOfWord);
+        const int index = ch - 'a';
+        if(childList[index] != nullptr){
+            return childList[index]->search(word, indexOfWord+1);
+        }
+        return false;
+    }
+
+
+    /** Returns if there is any word in the trie that starts with the given prefix. */
+    bool startsWith(const string& word, const int indexOfWord = 0) const {
+        if(indexOfWord == word.size()){
+            return true;
+        }
+        const char ch = word.at(indexOfWord);
+        const int index = ch - 'a';
+        if(childList[index] != nullptr){
+            return childList[index]->startsWith(word, indexOfWord+1);
+        }
+        return false;
+    }
+
+
+    int sum(const string& word, const int indexOfWord = 0) const {
+        if(indexOfWord == word.size()){
+            return sumary;
+        }
+        const char ch = word.at(indexOfWord);
+        const int index = ch - 'a';
+        if(childList[index] != nullptr){
+            return childList[index]->sum(word, indexOfWord+1);
+        }
+        return 0;
+    }
+
 };
 #endif //LEETCODE_MYTREE_H
