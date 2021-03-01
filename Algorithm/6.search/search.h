@@ -738,6 +738,86 @@ class Search{
     }
 
 
+    /**
+     * 两个回溯经典难题，解数独、八皇后
+     */
+
+    /**
+     * 不能互相攻击的皇后
+     * @param N 皇后
+     * @return .表示空 Q是皇后
+     */
+    vector<vector<string>> solveNQueens(const int N) {
+        const int mid = (1+N) / 2;
+        vector<vector<int>> result_int;
+        for(int i = 0; i< mid; i++){
+            vector<int> currentVector = {i};
+            solveNQueens_dfs(N, result_int, currentVector);
+        }
+        return doubled(N, result_int);
+    }
+
+    void solveNQueens_dfs(const int N, vector<vector<int>>& result, vector<int>& currentVector){
+        if(currentVector.size() == N){
+            result.push_back(currentVector);
+            return;
+        }
+        for(int i = 0; i < N; i++){
+            if( ! conflict(currentVector, i) ){
+                currentVector.push_back(i);
+                solveNQueens_dfs(N, result, currentVector);
+                currentVector.pop_back();
+            }
+        }
+    }
+
+    bool conflict(const vector<int>& currentVector, const int NUMBER){
+        assert(!currentVector.empty());
+        const int SIZE = currentVector.size();
+        for(int ptr = 0; ptr < SIZE; ptr++){
+            const int number = currentVector.at(ptr);
+            if(number == NUMBER){
+                return true;
+            }
+            if((SIZE - ptr) == abs(number - NUMBER)){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    vector<vector<string>> doubled(const int N, const vector<vector<int>>& input){
+        const string S (N,'.');
+        vector<vector<string>> result;
+        for(const auto & in : input){
+            result.emplace_back();
+            for(int i : in){
+                result.back().push_back(S);
+                result.back().back().at(i) = 'Q';
+            }
+        }
+
+        //  以下为对称操作
+        int last = (int)input.size() - 1;
+
+        // buggy 这个是等于N, 而不是input.size().  和input没关系的......
+        // buggy 必须要while循环啊，不仅仅有一个是占领中心而导致无法对称的。换句话说，这里还有进一步优化的空间
+        // buggy 需要 last>=0 的限制以防止溢出，尤其是小的奇数： 1、5 之类的
+        while (last >= 0 and input.at(last).front() * 2 + 1 == N ){
+            last --;
+        }
+
+        for(int index = last; index >= 0; index--){
+            const auto & in = input.at(index);
+            result.emplace_back();
+            for(int i : in){
+                result.back().push_back(S);
+                result.back().back().at(N-1-i) = 'Q';
+            }
+        }
+        return result;
+    }
+
 public:
     void test_findCircleNum(){
         cout<<findCircleNum({{1,1,0,0},{1,1,0,0},{0,0,1,0},{0,0,0,1}})<<endl;
