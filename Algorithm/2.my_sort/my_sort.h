@@ -7,16 +7,15 @@
 #include "../../Helper.h"
 class Sort{
 
-    //  buggy 大量重复出现的时候，会导致超时
     inline int findKthLargest(vector<int>& nums, const int k, const int LOW = 0, int high = -1 /* 实际上是size */) {//左闭右开
         //使用某种nb的算法, [bfprt]
         const int HIGH = high == -1 ? (int)nums.size() : high;
-        assert(HIGH - LOW >= k);
+        assert(LOW <= k - 1 and k - 1 < HIGH);
         if(HIGH - LOW == 1){
             return nums[LOW];
         }
         vector<int> middles;
-        //cout<<"low="<<LOW<<'\t'<<"high="<<HIGH<<'\t'<<"K="<<k<<endl;
+//        cout<<"low="<<LOW<<'\t'<<"high="<<HIGH<<'\t'<<"k="<<k<<endl;
         for(int i = LOW, j = LOW + 5; ; i = j, j += 5){
             if(j >= HIGH){
                 sort(&nums[i], &nums[HIGH]);
@@ -30,52 +29,34 @@ class Sort{
         }
 
         const int middle = findKthLargest(middles, ((int)middles.size()+1)/2);  // 原因: k 是从 1 开始计数的...
-        int empty_ptr = -1;
         for(int i = LOW;i<HIGH;i++){
             if(nums.at(i) == middle){
-                empty_ptr = HIGH - 1;
-                swap(nums[i], nums[empty_ptr]);//为了简化流程，引入冗余的move
+                swap(nums[i], nums[LOW]);//为了简化流程，引入冗余的move
                 break;
             }
         }
-        assert(empty_ptr > 0);
-        //直到这里，才求出了中间数及其对应的位置
 
-
-        for(int i = LOW, j = HIGH-1; ;){
-            while(i<=j && nums.at(i) >= middle){        // buggy  是以中位数为分隔基准
-                i++;
-            }
-            if(i<j){
-                nums[empty_ptr] = nums[i];
-                empty_ptr = i;
+        //直到这里，才求出了中间数及其对应的位置. 而且已经完成一次交换
+        //下面可以通过修改 >  ,   <  来更换功能
+        int left = LOW, right = HIGH-1;
+        for(int i = LOW ; i<=right; ){
+            const int current = nums.at(i);
+            if(current > middle){
+                swap(nums[i++], nums[left++]);
+            } else if(current < middle){
+                swap(nums[i],nums[right--]);
             } else{
-                break;
+                ++i;
             }
-
-            while(i<=j && nums.at(j) <= middle) {
-                j--;
-            }
-            if(i<j){
-                nums[empty_ptr] = nums[j];
-                empty_ptr = j;
-            } else{
-                break;
-            }
-
         }
-        nums[empty_ptr] = middle;
 
-
-        //  小心middle处出现大量重复
-        if(empty_ptr+1 - LOW < k){                                           // buggy  要 +1 -LOW, 因为它才是真正的序数
-            return findKthLargest(nums, k-(empty_ptr+1 - LOW), empty_ptr+1, HIGH);
-        } else if(empty_ptr+1 - LOW > k){
-            return findKthLargest(nums, k, LOW, empty_ptr);
+        if(k - 1 < left){
+            return findKthLargest(nums, k, LOW, left);
+        } else if(k - 1 > right){
+            return findKthLargest(nums, k, right + 1, HIGH);
         } else{
             return middle;
         }
-
     }
 
 
@@ -136,8 +117,8 @@ class Sort{
     }
 public:
     void test_findKthLargest(){
-        vector<int> nums = {3,3,4};
-        cout<<findKthLargest(nums,1) <<endl;
+        vector<int> nums = {3,2,1,5,6,4};
+        cout<<findKthLargest(nums,2) <<endl;
     }
     void test_findKthLargest_heap(){
         vector<int> nums = {3,2,1,5,6,4};
