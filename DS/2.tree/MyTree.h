@@ -626,5 +626,37 @@ public:
         return 0;
     }
 
+    vector<vector<int>> zigzagLevelOrder(TreeNode* root) {
+        vector<vector<int>>result;
+        if(root == nullptr){
+            return result;
+        }
+        bool reverse = false;
+        deque<TreeNode*> my_deque{root};
+        while(!my_deque.empty()){
+            result.emplace_back();
+            const int SIZE = my_deque.size();
+            if(!reverse) {
+                for (int i = 0; i < SIZE; i++) {
+                    TreeNode *const node = my_deque.front();
+                    my_deque.pop_front();
+                    if (node->left) { my_deque.push_back(node->left); }
+                    if (node->right) { my_deque.push_back(node->right); }
+                    result.back().push_back(node->val);
+                }
+            } else{
+                for (int i = 0; i < SIZE; i++) {
+                    TreeNode *const node = my_deque.back();
+                    my_deque.pop_back();
+                    if (node->right) { my_deque.push_front(node->right); }
+                    if (node->left) { my_deque.push_front(node->left); }
+                    result.back().push_back(node->val);
+                }
+            }
+            reverse = !reverse;
+        }
+        return result;
+    }
+
 };
 #endif //LEETCODE_MYTREE_H
