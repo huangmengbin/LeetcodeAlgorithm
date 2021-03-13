@@ -12,20 +12,30 @@
 #include "DS/2.tree/MyTree.h"
 #include "DS/3.arrayList/ArrayList.h"
 #include "DS/5.String/DS_String.h"
+
+#include "Alibaba.h"
+#include "Tencent_1_1.h"
 using namespace std;
 int main() {
-    Double_pointer double_pointer;
-    Sort my_sort;
-    Greedy greedy;
-    BinarySearch binarySearch;
-    Divide divide;
-    Search search;
-    DP dp;
-    MyMath myMath;
+//    Double_pointer double_pointer;
+//    Sort my_sort;
+//    my_sort.test_findKthLargest();
+//    Greedy greedy;
+//    BinarySearch binarySearch;
+//    Divide divide;
+//    Search search;
+//    DP dp;
+//    MyMath myMath;
+//
+//    My_LinkedList linkedList;
+//    MyTree tree;
+//    DS_string ds_string;
 
-    My_LinkedList linkedList;
-    MyTree tree;
-    DS_string ds_string;
-    //ds_string.test_KMP();
+    Alibaba_Solution solution;
+    solution.test();
+
+//    Tencent_1_1_Solution solution;
+//    solution.test();
+
     return 0;
 }
