@@ -626,7 +626,7 @@ class Search{
         for(unsigned i = index, SIZE = candidates.size(); i<SIZE; i++){
             const int candidate = candidates.at(i);
             current.push_back(candidate);
-            //  buggy  递归不是用 index, 更不是 index+1, 而是 当前的 i；这样才能避免重复组合，同时重复选取
+            //  buggy  递归不是用 index, 更不是 index+1, 而是 当前的 index；这样才能避免重复组合，同时重复选取
             combinationSumBacktracking1(i, candidates, target, currentSum + candidate, result, current);
             current.pop_back();
         }

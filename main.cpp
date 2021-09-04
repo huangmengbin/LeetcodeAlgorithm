@@ -13,8 +13,14 @@
 #include "DS/3.arrayList/ArrayList.h"
 #include "DS/5.String/DS_String.h"
 
+#include "codeTop.h"
 #include "Alibaba.h"
 #include "Tencent_1_1.h"
+#include "Bytedance/Commercial_Advertising.h"
+#include "Tencent/Wxg_db_1.h"
+#include "Tencent/Wxg_db_2.h"
+#include "learn/shared.h"
+
 using namespace std;
 int main() {
 //    Double_pointer double_pointer;
@@ -22,6 +28,7 @@ int main() {
 //    my_sort.test_findKthLargest();
 //    Greedy greedy;
 //    BinarySearch binarySearch;
+//    binarySearch.test_lengthOfLIS();
 //    Divide divide;
 //    Search search;
 //    DP dp;
@@ -31,11 +38,30 @@ int main() {
 //    MyTree tree;
 //    DS_string ds_string;
 
-    Alibaba_Solution solution;
-    solution.test();
+//    Alibaba_Solution solution;
+//    solution.test();
 
 //    Tencent_1_1_Solution solution;
 //    solution.test();
+
+//    CodeTop codeTop;
+//    codeTop.test_LRUCache();
+
+//    Commercial_Advertising commercialAdvertising;
+//    commercialAdvertising.test();
+
+//    Tencent_1_1_Solution tencent;
+//    tencent.test();
+
+//    Son* son=new Son(" l");
+//    shared_ptr<Son> ptr1(son);
+//    cout<<"ppp"<<endl;
+
+//    Wxg_db_1 wxgDb1;
+//    wxgDb1.test();
+
+//    Wxg_db_2 wxgDb2;
+//    wxgDb2.testDecodeString();
 
     return 0;
 }

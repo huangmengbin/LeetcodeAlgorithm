@@ -23,7 +23,7 @@ class BinarySearch{
         }
         return l;
     }
-    inline int binarySearchRight(int LEFT, int RIGHT,  const function<bool(const int&)>& func) {   //  最右, 返回值可能在[LEFT,RIGHT],但 m==LEFT 永远不会发生
+    inline int binarySearchRight(const int LEFT, const int RIGHT,  const function<bool(const int&)>& func) {   //  最右, 返回值可能在[LEFT,RIGHT],但 m==LEFT 永远不会发生
         int l = LEFT, h = RIGHT;    //  [ l , h ]
         while (l < h) {
             int m = l + (h - l + 1) / 2;    // 向上取整
@@ -120,6 +120,38 @@ class BinarySearch{
         return {left, binarySearchRight(0, SIZE-1, [target, &nums](int m){return nums.at(m) <= target;})};
     }
 
+
+    int lengthOfLIS_right(const vector<int>& nums) {
+        vector<int>vec;
+        for(const int num : nums){
+            const int lastIndex = (int)vec.size()-1;    // lastIndex第一次肯定是负数的
+            // buggy 这里左边应该传 -1，右边传size()-1. 要避免该类错误，请熟读并背诵文档。
+            int index = binarySearchRight(-1, lastIndex,[&vec,num](const int p){ return vec.at(p)<num; });
+            if(index == lastIndex){
+                vec.push_back(num);
+            } else{
+                vec.at(index+1)=num;
+            }
+            printVector(vec);
+        }
+        return vec.size();
+    }
+
+    int lengthOfLIS(const vector<int>& nums) {
+        vector<int>vec;
+        for(const int num : nums){
+            const int SIZE = (int)vec.size();
+            int index = binarySearchLeft(0, SIZE,[&vec,num](const int p){ return vec.at(p) >= num; });
+            if(index == SIZE){
+                vec.push_back(num);
+            } else{
+                vec.at(index)=num;
+            }
+            printVector(vec);
+        }
+        return vec.size();
+    }
+
 public:
 
 
@@ -141,6 +173,10 @@ public:
 
     void test_searchRange() {
         printVector(searchRange({5,7,7,8,8,10},8));
+    }
+
+    void test_lengthOfLIS(){
+        cout<<lengthOfLIS({10,9,2,5,3,7,101,18});
     }
 
 };

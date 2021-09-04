@@ -27,6 +27,18 @@ struct ListNode {
     explicit ListNode(int x) : val(x), next(nullptr) {}
 };
 
+class DoublyListNode {
+public:
+    int key = 0;
+    int val = 0;
+    DoublyListNode *prev = nullptr;
+    DoublyListNode *next = nullptr;
+    explicit DoublyListNode() = default;
+    explicit DoublyListNode(int x) : DoublyListNode() { this->val = x; }
+    explicit DoublyListNode(int key, int val) : DoublyListNode(val) { this->key = key; }
+    explicit DoublyListNode(int key, int val, DoublyListNode *prev, DoublyListNode *next) : DoublyListNode(key, val){ this->prev = prev; this->next = next;}
+};
+
 inline void printListNode(ListNode* listNode){
     while(listNode){
         cout << listNode->val << " -> ";
